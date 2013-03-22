@@ -1,3 +1,5 @@
-Execute the following command to run the parser:
+OPENBEACON READER PARSER AND EXTENSIONS
+
+Execute the following command to run the parser help:
 $ cd bin
-$ java -cp ".:../lib/*" com.socialdis.parsing.LogParser -h
+$ java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -h
