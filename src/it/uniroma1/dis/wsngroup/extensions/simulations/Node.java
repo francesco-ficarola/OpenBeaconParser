@@ -1,4 +1,4 @@
-package cit.uniroma1.dis.wsngroup.extensions.simulations;
+package it.uniroma1.dis.wsngroup.extensions.simulations;
 
 import java.util.Comparator;
 import java.util.LinkedList;

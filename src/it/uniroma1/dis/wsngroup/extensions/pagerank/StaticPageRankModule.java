@@ -160,7 +160,10 @@ public class StaticPageRankModule {
 		return irreducibleMatrix;
 	}
 	
-	/** pi(k+1) = pi(k) * P'' */
+	/**
+	 * pi(k+1) = pi(k) * P'' 
+	 * The number of iterations of the power method must be specified
+	 */
 	public DenseDoubleMatrix1D computePageRank(DenseDoubleMatrix2D irreducibleMatrix) {
 		System.out.println("Computing PageRanks...");
 		
