@@ -51,11 +51,12 @@ public class LogParser {
 	public static Integer percOfDeliveredMsg;
 	
 	public LogParser() {
+		fileInput = null;
 		separator = ParsingConstants.TAB_SEPARATOR;
 		fileType = ParsingConstants.TXT_FILE_TYPE;
 		representationType = ParsingConstants.ADJACENCY_LISTS_REPRESENTATION;
 		dateTime = new DateTime().getDateTime();
-		listGraphOut = "graph" + "_" + dateTime[0] + "_" + dateTime[1];
+		listGraphOut = "graph";
 		startTS = 0;
 		endTS = 2147483647;
 		
@@ -74,8 +75,15 @@ public class LogParser {
 		logger.info("Initializing...");
 		
 		try {
-			while(init()) {
-				;
+			if(fileInput != null && fileInput.exists()) {
+				fis = new FileInputStream(fileInput);
+			} else {
+				if(fileInput != null && !fileInput.exists()) {
+					System.out.println("ERROR: " + fileInput.getAbsolutePath()+ "- No such file or directory");
+				}
+				while(init()) {
+					;
+				}
 			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -305,6 +313,23 @@ public class LogParser {
 		
 		if(args.length > 0) {
 			for(int i = 0; i < args.length; i++) {
+				if(args[i].equals("-date") || args[i].equals("--datetime")) {
+					listGraphOut = listGraphOut + "_" + dateTime[0] + "_" + dateTime[1];
+				}
+				
+				else
+					
+				if(args[i].equals("-f") || args[i].equals("--file-name")) {
+					if(args.length > i+1 && args[i+1].matches(".+")) {
+						fileInput = new File(args[i+1]);
+					} else {
+						usage();
+						System.exit(0);
+					}
+				}
+				
+				else
+					
 				if(args[i].equals("-st") || args[i].equals("--start-timestamp")) {
 					if(args.length > i+1 && args[i+1].matches("\\d+")) {
 						startTS = Integer.parseInt(args[i+1]);
@@ -466,15 +491,15 @@ public class LogParser {
 				
 				else
 					
-				if(args[i].matches("\\d+")) {
-					;
+				if(args[i].equals("-h") || args[i].equals("--help")) {
+					usage();
+					System.exit(0);
 				}
 				
 				else
 					
-				if(args[i].equals("-h") || args[i].equals("--help")) {
-					usage();
-					System.exit(0);
+				if(args[i].matches(".+")) {
+					;
 				}
 				
 				else {
@@ -508,6 +533,7 @@ public class LogParser {
 	private static void usage() {
 		System.out.println("\nTARGET SPECIFICATION:");
 		System.out.println("-h or --help: Getting this help.");
+		System.out.println("-date or --datetime: Append date and time to the file name.");
 		System.out.println("-csv or --csv-format: The output file type will be in CSV format (only for Adjacency Lists and Adjacency Matrix).");
 		System.out.println("-am or --adjacency-matrix: The output graph will be represented by adjacency matrix.");
 		System.out.println("-gexf or --gexf: The output graph will be represented by XML Gephi format. This is incompatible with other representation parameters.");

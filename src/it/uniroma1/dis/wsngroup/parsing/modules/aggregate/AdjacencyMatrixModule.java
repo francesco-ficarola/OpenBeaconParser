@@ -176,7 +176,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 						 */
 							
 						if(LogParser.buildingEdgeMode == ParsingConstants.INTERVAL_EDGE_MODE) {
-							Integer numOfNeededMsgForInterval = LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg / 100;
+							Integer numOfNeededMsgForInterval = Math.round((float)(LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg) / 100);
 														
 							ArrayList<String> edge = new ArrayList<String>();
 							edge.add(idSourceElement);
@@ -432,31 +432,33 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 			ps.close();
 		}
 		
-		double avgEstimation = 0;
-		int numTags = 0;
-		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
-		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
-		while(itSketch.hasNext()) {
-			Entry<String, Integer> entry = itSketch.next();
-			String id = entry.getKey();
-			Integer sketch = entry.getValue();
-			
-			boolean[] binary = intToBinaryArray(sketch, 16);
-			int pos_first_zero = 0;
-			for(int j = 0; j < binary.length; j++) {
-				boolean c = binary[j];
-				if(!c) {
-					pos_first_zero = j;
-					break;
-				}
-			}
-			double estimation = Math.pow(2, pos_first_zero)/0.77351;
-			avgEstimation += estimation;
-			System.out.println(id + "\t" + sketch + "\t" + boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
-			numTags++;
-		}
-		avgEstimation = avgEstimation / numTags;
-		System.out.println("Estimation: " + avgEstimation);
+		
+		/** FM-Sketch part */
+//		double avgEstimation = 0;
+//		int numTags = 0;
+//		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
+//		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
+//		while(itSketch.hasNext()) {
+//			Entry<String, Integer> entry = itSketch.next();
+//			String id = entry.getKey();
+//			Integer sketch = entry.getValue();
+//			
+//			boolean[] binary = intToBinaryArray(sketch, 16);
+//			int pos_first_zero = 0;
+//			for(int j = 0; j < binary.length; j++) {
+//				boolean c = binary[j];
+//				if(!c) {
+//					pos_first_zero = j;
+//					break;
+//				}
+//			}
+//			double estimation = Math.pow(2, pos_first_zero)/0.77351;
+//			avgEstimation += estimation;
+//			System.out.println(id + "\t" + sketch + "\t" + boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
+//			numTags++;
+//		}
+//		avgEstimation = avgEstimation / numTags;
+//		System.out.println("Estimation: " + avgEstimation);
 	}
 	
 	public boolean[] intToBinaryArray(int number, int length) {
