@@ -197,6 +197,12 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								Integer curTagTS = currentInformationTime.get(0);
 								Integer curCounter = currentInformationTime.get(1);
 								
+								/** 
+								 * SEZIONE AGGIORNAMENTO ARCHI:
+								 * Creazione archi nella matrice d'adiacenza se i contatti avuti nei 
+								 * TS precedenti soddisfano i requisiti di numOfNeededMsgForInterval.
+								 */
+								
 								// Se il timestamp del nodo e' un multiplo dell'intervallo scelto
 								// o se l'arco non e' comparso in un timestamp multiplo dell'intervallo scelto
 								// ed ha un timestamp antecedente rispetto all'intervallo attuale,
@@ -220,11 +226,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 											adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
 										}
 									}
-									
-									// Azzero i contatori degli array
-									currentInformationTime.set(1, 0);
-									currentInformationTimeInv.set(1, 0);
 								}
+								
+								
+								/** SEZIONE AGGIORNAMENTO CONTATTI */
 								
 								// Se il timestamp memorizzato nei tag e' compreso nell'intervallo
 								// [last timestamp multiple of numberOfIntervalTS, current timestamp)
@@ -239,8 +244,9 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								else
 								
 								// Se il timestamp memorizzato nei tag e' piu' antecedente dell'ultimo valore
-								// multiplo di numberOfIntervalTS, allora setto i contatori a 1 (nuovo arco)
-								if(curTagTS < (currentTS - (currentTS % LogParser.numberOfIntervalTS))) {
+								// multiplo di numberOfIntervalTS, oppure e' uguale al timestamp corrente, 
+								// allora setto i contatori a 1 (nuovo arco)
+								if(curTagTS < (currentTS - (currentTS % LogParser.numberOfIntervalTS)) || curTagTS.equals(currentTS)) {
 									currentInformationTime.set(1, 1);
 									currentInformationTimeInv.set(1, 1);
 								}
