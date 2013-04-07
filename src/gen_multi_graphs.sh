@@ -11,9 +11,15 @@ do
 	do
 		echo "Percentage of messages: $PERC"
 		java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -am -csv -it $TIME $PERC -f $PATH_FILES/$LOG_NAME
-		GRAPH_RENAMING="graph_${TIME}_${PERC}.csv"
-		mv $PATH_FILES/graph.csv $PATH_FILES/$GRAPH_RENAMING
-		PERC=$(( $PERC + 5 ))
+		if [ -f $PATH_FILES/graph.csv ]
+		then
+			GRAPH_RENAMING="graph_${TIME}_${PERC}.csv"
+			mv $PATH_FILES/graph.csv $PATH_FILES/$GRAPH_RENAMING
+			PERC=$(( $PERC + 5 ))
+		else
+			PERC=101
+		fi
+		
 	done
 	TIME=$(( $TIME + 1 ))
 done

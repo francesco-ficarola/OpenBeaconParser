@@ -59,4 +59,21 @@ public class Functions {
 		return min;
 	}
 	
+	public static boolean[] intToBinaryArray(int number, int length) {
+		boolean[] bits = new boolean[length];
+	    for (int i = length-1; i >= 0; i--) {
+	        bits[i] = (number & (1 << i)) != 0;
+	    }
+	    return bits;
+	}
+
+	public static String boolArrayToString(boolean[] binary) {
+		String ret = "";
+		for(int i = binary.length-1; i >= 0; i--) {
+			if(binary[i]) ret += "1";
+			else ret += "0";
+		}
+		return ret;
+	}
+	
 }

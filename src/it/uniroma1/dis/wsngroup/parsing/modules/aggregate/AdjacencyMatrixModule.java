@@ -1,6 +1,7 @@
 package it.uniroma1.dis.wsngroup.parsing.modules.aggregate;
 
 import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
+import it.uniroma1.dis.wsngroup.core.Functions;
 import it.uniroma1.dis.wsngroup.parsing.LogParser;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
@@ -13,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -213,7 +215,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								if((currentTS % LogParser.numberOfIntervalTS == 0)
 										|| (curTagTS < currentTS - (currentTS % LogParser.numberOfIntervalTS))) {
 									
+									logger.debug("UNLOADING - currentTS: " + currentTS);
+									logger.debug("EDGES: " + edge.toString() + " or " + edgeInv.toString());
+									
 									if(curCounter >= numOfNeededMsgForInterval) {
+										
 										contactNumber++;
 										
 										if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
@@ -353,6 +359,59 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		}
 	}
 	
+	private void updateHangingFinalContacts() {
+		Integer numOfNeededMsgForInterval = Math.round((float)(LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg) / 100);
+		ArrayList<ArrayList<String>> contactsListAlreadyProcessed = new ArrayList<ArrayList<String>>();
+		
+		Set<Map.Entry<ArrayList<String>, ArrayList<Integer>>> setContacts = aggregationOfEdge.entrySet();
+		Iterator<Entry<ArrayList<String>, ArrayList<Integer>>> itContacts = setContacts.iterator();
+		while(itContacts.hasNext()) {
+			boolean contactAlreadyProcessed = false;
+			Entry<ArrayList<String>, ArrayList<Integer>> entry = itContacts.next();
+			
+			ArrayList<String> contact = entry.getKey();
+			String idSourceElement = contact.get(0);
+			String idTargetElement = contact.get(1);
+			
+			for(ArrayList<String> alreadyContact : contactsListAlreadyProcessed) {
+				if(alreadyContact.get(0).equals(idSourceElement) && alreadyContact.get(1).equals(idTargetElement)
+				|| alreadyContact.get(0).equals(idTargetElement) && alreadyContact.get(1).equals(idSourceElement)) {
+					
+					contactAlreadyProcessed = true;
+				}
+			}
+
+			ArrayList<Integer> informationContact = entry.getValue();
+			Integer contactCounter = informationContact.get(1);
+			
+			if(!contactAlreadyProcessed) {
+				if(contactCounter >= numOfNeededMsgForInterval) {
+					logger.debug("FINAL UNLOADING FOR CONTACT: " + contact.toString());
+					contactNumber++;
+					
+					if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
+						adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
+						adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
+					} else {
+						int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
+						curWeight++;
+						adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
+						adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
+					}
+				}
+				
+				// Aggiunta del nuovo contatto (e inverso) nell'array di quelli gia' processati
+				ArrayList<String> alreadyContact = new ArrayList<String>();
+				alreadyContact.add(idSourceElement);
+				alreadyContact.add(idTargetElement);
+				ArrayList<String> alreadyContactInv = new ArrayList<String>();
+				alreadyContactInv.add(idTargetElement);
+				alreadyContactInv.add(idSourceElement);
+				contactsListAlreadyProcessed.add(alreadyContact);
+				contactsListAlreadyProcessed.add(alreadyContactInv);
+			}
+		}
+	}	
 
 	@Override
 	public void readLog(Integer startTS, Integer endTS) throws IOException {
@@ -369,6 +428,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 					packetParsing(currentLine.trim(), startTS, endTS);
 				}
 			}
+			updateHangingFinalContacts();
 		} finally {
 			if(br != null) {
 				br.close();
@@ -380,6 +440,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 	public void writeFile(String outputFileName, String separator) throws IOException {
 		
 		logger.info("Number of total contacts: " + contactNumber);
+		
+		if(contactNumber.equals(0)) {
+			logger.warn("The social graph is empty.");
+			return;
+		}
 		
 		if(adjacencyMatrix.size() > 0) {
 			logger.info("Writing...");
@@ -449,7 +514,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 //			String id = entry.getKey();
 //			Integer sketch = entry.getValue();
 //			
-//			boolean[] binary = intToBinaryArray(sketch, 16);
+//			boolean[] binary = Functions.intToBinaryArray(sketch, 16);
 //			int pos_first_zero = 0;
 //			for(int j = 0; j < binary.length; j++) {
 //				boolean c = binary[j];
@@ -460,27 +525,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 //			}
 //			double estimation = Math.pow(2, pos_first_zero)/0.77351;
 //			avgEstimation += estimation;
-//			System.out.println(id + "\t" + sketch + "\t" + boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
+//			System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
 //			numTags++;
 //		}
 //		avgEstimation = avgEstimation / numTags;
 //		System.out.println("Estimation: " + avgEstimation);
 	}
 	
-	public boolean[] intToBinaryArray(int number, int length) {
-		boolean[] bits = new boolean[length];
-	    for (int i = length-1; i >= 0; i--) {
-	        bits[i] = (number & (1 << i)) != 0;
-	    }
-	    return bits;
-	}
-
-	public String boolArrayToString(boolean[] binary) {
-		String ret = "";
-		for(int i = binary.length-1; i >= 0; i--) {
-			if(binary[i]) ret += "1";
-			else ret += "0";
-		}
-		return ret;
-	}
 }
