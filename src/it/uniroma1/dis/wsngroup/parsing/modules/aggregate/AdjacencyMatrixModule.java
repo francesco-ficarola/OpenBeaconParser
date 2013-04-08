@@ -428,7 +428,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 					packetParsing(currentLine.trim(), startTS, endTS);
 				}
 			}
-			updateHangingFinalContacts();
+			
+			if(LogParser.buildingEdgeMode == ParsingConstants.INTERVAL_EDGE_MODE) {
+				updateHangingFinalContacts();
+			}
+			
 		} finally {
 			if(br != null) {
 				br.close();
