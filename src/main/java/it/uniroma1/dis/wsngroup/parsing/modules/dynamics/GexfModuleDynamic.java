@@ -205,7 +205,7 @@ public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 			StaxGraphWriter graphWriter = new StaxGraphWriter();
 			File f = new File(fileInput.getParentFile() + "/" + outputFileName);
 			FileOutputStream fos = new FileOutputStream(f, true);
-			graphWriter.writeToStream(xmlGraph, fos);
+			graphWriter.writeToStream(xmlGraph, fos, "UTF-8");
 			logger.info("Output file: " + f.getAbsolutePath());
 		}
 	}

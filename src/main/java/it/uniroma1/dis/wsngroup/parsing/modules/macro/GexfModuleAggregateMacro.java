@@ -546,7 +546,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 		File f = new File(fileInput.getParentFile() + "/" + outputFileName);
 		FileOutputStream fos = new FileOutputStream(f, false);
 		
-		graphWriter.writeToStream(xmlGraph, fos);
+		graphWriter.writeToStream(xmlGraph, fos, "UTF-8");
 		
 		logger.info("Output file: " + f.getAbsolutePath());
 	}
