@@ -1,7 +1,7 @@
 OpenBeacon Log Parser and Extensions
 =======================================
 
-The OpenBeacon Parser is a software under development to parse log files produced by the [OpenBeacon Ethernet EasyReader PoE II - Active 2.4GHz RFID Reader](http://www.openbeacon.org/OpenBeacon_Ethernet_EasyReader_PoE_II_-_Active_2.4GHz_RFID_Reader) devices. In addition, it contains useful extensions to analyze several algorithms on graphs.
+The OpenBeacon Parser is a software under development to parse log files produced by a backend server, receiving packets from the [OpenBeacon Ethernet EasyReader PoE II - Active 2.4GHz RFID Reader](http://www.openbeacon.org/OpenBeacon_Ethernet_EasyReader_PoE_II_-_Active_2.4GHz_RFID_Reader) devices. In addition, it contains useful extensions to analyze several algorithms on graphs.
 
 Parser author: *Francesco Ficarola* - Extensions author: *Gianluca Amori*
 
@@ -22,27 +22,32 @@ Supported output graph formats
 * JSON [[link](http://www.json.org/)]
 
 
-How to run
+How to compile
 ----------
 
-Execute the following command to run the parser help:
+	$ mvn clean compile
 
-	$ cd bin
-	$ java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -h
+
+How to run the LogParser
+------------------------
+
+Execute the following command to run the parser help and see all accepted arguments:
+
+	$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-h"
 
 Examples:
 
 * Adjacency List (default):
 
-		$ java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -f logfile.txt -csv
+		$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-f logfile.txt -csv"
 
 * Adjacency Matrix:
 
-		$ java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -f logfile.txt -am -csv
+		$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-f logfile.txt -am -csv"
 
 * DNF:
 
-		$ java -cp ".:../lib/*" it.uniroma1.dis.wsngroup.parsing.LogParser -f logfile.txt -dnf
+		$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-f logfile.txt -dnf"
 
 
 Log example that can be parsed
