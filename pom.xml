@@ -85,9 +85,9 @@
   		<version>1.20</version>
   	</dependency>
   	<dependency>
-  		<groupId>gexf4j</groupId>
+  		<groupId>it.uniroma1.dis.wsngroup.gexf4j</groupId>
   		<artifactId>gexf4j</artifactId>
-  		<version>0.4.0-BETA</version>
+  		<version>0.4.2-BETA</version>
   	</dependency>
   	<dependency>
   		<groupId>javaml</groupId>

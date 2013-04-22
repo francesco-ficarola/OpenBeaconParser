@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import it.uniroma1.dis.wiserver.gexf4j.core.EdgeType;
-import it.uniroma1.dis.wiserver.gexf4j.core.Gexf;
-import it.uniroma1.dis.wiserver.gexf4j.core.Graph;
-import it.uniroma1.dis.wiserver.gexf4j.core.Mode;
-import it.uniroma1.dis.wiserver.gexf4j.core.Node;
-import it.uniroma1.dis.wiserver.gexf4j.core.dynamic.Spell;
-import it.uniroma1.dis.wiserver.gexf4j.core.dynamic.TimeFormat;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.GexfImpl;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.StaxGraphWriter;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.SpellImpl;
+import it.uniroma1.dis.wsngroup.gexf4j.core.EdgeType;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Gexf;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Graph;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Mode;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Node;
+import it.uniroma1.dis.wsngroup.gexf4j.core.dynamic.Spell;
+import it.uniroma1.dis.wsngroup.gexf4j.core.dynamic.TimeFormat;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.GexfImpl;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.StaxGraphWriter;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.SpellImpl;
 import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 
 public class GexfModuleDynamic extends AbstractModuleWithoutDB {
@@ -56,18 +56,18 @@ public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 	
 	private void weightNormalizing() {
 		float totalTime = stopRealTS - startRealTS;
-		List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> edgeList = graph.getAllEdges();
+		List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> edgeList = graph.getAllEdges();
 		for(int i = 0; i < edgeList.size(); i++) {
 			edgeList.get(i).setWeight(edgeList.get(i).getWeight() * 1000 / totalTime);
 		}
 	}
 	
 	private void setWeightExistingEdges(Integer indexExistEdge) {
-		List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> edgeList = graph.getAllEdges();	
+		List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> edgeList = graph.getAllEdges();	
 		edgeList.get(indexExistEdge).setWeight(edgeList.get(indexExistEdge).getWeight() + 1);
 	}
 	
-	private Integer searchIndexEdge(List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> listEdges, Node a, Node b) {
+	private Integer searchIndexEdge(List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> listEdges, Node a, Node b) {
 		Integer indexExistEdge = -1;
 		if(listEdges != null) {
 			for(int i = 0; i < listEdges.size(); i++) {
@@ -105,7 +105,7 @@ public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 			Iterator<TimestampObject> it = tsObjectList.iterator();
 			while(it.hasNext()) {
 				List<Node> listNodes = graph.getNodes();
-				List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> listEdges = graph.getAllEdges();
+				List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> listEdges = graph.getAllEdges();
 				TimestampObject timestampObject = it.next();
 				Long milliCurrentTS = Long.parseLong(timestampObject.getTimestamp()) * ParsingConstants.MILLI;
 				Date currentDate = new Date(milliCurrentTS.longValue());
@@ -154,7 +154,7 @@ public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 						Node source = hashMapNodes.get(idSourceNode);
 						Node target = hashMapNodes.get(idTargetNode);
 						if(!source.hasEdgeTo(idTargetNode) && !target.hasEdgeTo(idSourceNode)) {
-							it.uniroma1.dis.wiserver.gexf4j.core.Edge newEdge = source.connectTo(String.valueOf(idEdges), target).setWeight(1);
+							it.uniroma1.dis.wsngroup.gexf4j.core.Edge newEdge = source.connectTo(String.valueOf(idEdges), target).setWeight(1);
 							Spell spell = new SpellImpl();
 							spell.setStartValue(currentDate);
 							spell.setEndValue(currentDate);
@@ -163,7 +163,7 @@ public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 						} else {
 							Integer indexSearchEdge = searchIndexEdge(listEdges, source, target);
 							if(!indexSearchEdge.equals(-1)) {
-								it.uniroma1.dis.wiserver.gexf4j.core.Edge existingEdge = listEdges.get(indexSearchEdge.intValue());
+								it.uniroma1.dis.wsngroup.gexf4j.core.Edge existingEdge = listEdges.get(indexSearchEdge.intValue());
 								setWeightExistingEdges(indexSearchEdge);
 								if(existingEdge.getSpells() != null) {
 									List<Spell> listSpells = existingEdge.getSpells();

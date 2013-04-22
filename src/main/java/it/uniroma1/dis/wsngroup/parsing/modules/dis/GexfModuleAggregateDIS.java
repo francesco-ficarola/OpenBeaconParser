@@ -19,18 +19,18 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import it.uniroma1.dis.wiserver.gexf4j.core.Edge;
-import it.uniroma1.dis.wiserver.gexf4j.core.EdgeType;
-import it.uniroma1.dis.wiserver.gexf4j.core.Gexf;
-import it.uniroma1.dis.wiserver.gexf4j.core.Mode;
-import it.uniroma1.dis.wiserver.gexf4j.core.Node;
-import it.uniroma1.dis.wiserver.gexf4j.core.data.Attribute;
-import it.uniroma1.dis.wiserver.gexf4j.core.data.AttributeClass;
-import it.uniroma1.dis.wiserver.gexf4j.core.data.AttributeList;
-import it.uniroma1.dis.wiserver.gexf4j.core.data.AttributeType;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.GexfImpl;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.StaxGraphWriter;
-import it.uniroma1.dis.wiserver.gexf4j.core.impl.data.AttributeListImpl;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Edge;
+import it.uniroma1.dis.wsngroup.gexf4j.core.EdgeType;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Gexf;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Mode;
+import it.uniroma1.dis.wsngroup.gexf4j.core.Node;
+import it.uniroma1.dis.wsngroup.gexf4j.core.data.Attribute;
+import it.uniroma1.dis.wsngroup.gexf4j.core.data.AttributeClass;
+import it.uniroma1.dis.wsngroup.gexf4j.core.data.AttributeList;
+import it.uniroma1.dis.wsngroup.gexf4j.core.data.AttributeType;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.GexfImpl;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.StaxGraphWriter;
+import it.uniroma1.dis.wsngroup.gexf4j.core.impl.data.AttributeListImpl;
 import it.uniroma1.dis.wsngroup.constants.DBConstants;
 import it.uniroma1.dis.wsngroup.db.DBObject;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
@@ -265,12 +265,12 @@ public class GexfModuleAggregateDIS implements GraphRepresentation {
 	
 	
 	private void setWeightExistingEdges(Integer indexExistEdge) {
-		List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> edgeList = xmlGraph.getGraph().getAllEdges();	
+		List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> edgeList = xmlGraph.getGraph().getAllEdges();	
 		edgeList.get(indexExistEdge).setWeight(edgeList.get(indexExistEdge).getWeight() + 1);
 	}
 	
 	
-	private Integer searchIndexEdge(List<it.uniroma1.dis.wiserver.gexf4j.core.Edge> listEdges, Node a, Node b) {
+	private Integer searchIndexEdge(List<it.uniroma1.dis.wsngroup.gexf4j.core.Edge> listEdges, Node a, Node b) {
 		Integer indexExistEdge = -1;
 		if(listEdges != null) {
 			for(int i = 0; i < listEdges.size(); i++) {
