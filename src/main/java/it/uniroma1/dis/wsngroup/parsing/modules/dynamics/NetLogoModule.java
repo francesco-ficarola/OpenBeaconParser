@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class NetLogoModule extends AbstractModuleWithoutDB {
 	
 	private boolean initReaders;

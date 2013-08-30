@@ -1,11 +1,11 @@
 package it.uniroma1.dis.wsngroup.constants;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class DBConstants {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	public static final String DB_TYPE = "mysql";
 	public static final String DB_SERVER_HOSTNAME = "127.0.0.1";

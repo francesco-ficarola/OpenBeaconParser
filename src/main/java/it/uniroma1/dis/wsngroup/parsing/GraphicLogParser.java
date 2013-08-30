@@ -21,12 +21,14 @@ import org.apache.log4j.Logger;
 
 import javax.swing.JOptionPane;
 
-public class GraphicLogParser {
+/**
+ * @author Lorenzo Bergamini
+ *
+ */
 
-    /**
-     * @author Lorenzo Bergamini
-     *
-     */
+@Deprecated
+public class GraphicLogParser {
+	
     private static Logger logger = Logger.getLogger(GraphicLogParser.class);
     private static String separator;
     private static String fileType;

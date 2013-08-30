@@ -5,12 +5,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class DBObject {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 		
 	private String db_type;
 	private String db_serverHostname;

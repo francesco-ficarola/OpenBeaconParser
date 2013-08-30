@@ -22,12 +22,12 @@ import it.uniroma1.dis.wsngroup.gexf4j.core.impl.StaxGraphWriter;
 import it.uniroma1.dis.wsngroup.gexf4j.core.impl.SpellImpl;
 import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 
-public class GexfModuleDynamic extends AbstractModuleWithoutDB {
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
+public class GexfModuleDynamic extends AbstractModuleWithoutDB {
 	
 	private Gexf xmlGraph;
 	private Graph graph;

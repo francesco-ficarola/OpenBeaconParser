@@ -20,13 +20,12 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class AdjacencyListsModule implements GraphRepresentation {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	

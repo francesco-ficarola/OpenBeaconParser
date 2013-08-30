@@ -7,6 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class MapUtil {
 	
 	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {

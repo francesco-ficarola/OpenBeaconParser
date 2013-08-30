@@ -12,13 +12,12 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class DBRefactor {
-
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	private static Logger logger = Logger.getLogger(DBRefactor.class);
 	

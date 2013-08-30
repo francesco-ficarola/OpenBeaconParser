@@ -1,11 +1,11 @@
 package it.uniroma1.dis.wsngroup.constants;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class ParsingConstants {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	public static final int ADJACENCY_LISTS_REPRESENTATION = 1;
 	public static final int ADJACENCY_MATRIX_REPRESENTATION = 2;

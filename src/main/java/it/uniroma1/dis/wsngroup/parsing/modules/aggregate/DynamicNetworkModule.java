@@ -15,13 +15,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class DynamicNetworkModule extends AbstractModuleWithoutDB {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	private Integer startTS;
 	private Integer endTS;

@@ -5,6 +5,7 @@ import it.uniroma1.dis.wsngroup.core.DateTime;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyListsModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyMatrixModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.DynamicNetworkModule;
+import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.GexfModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.GexfModuleAggregateDIS;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.JsonModuleDIS;
 import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.GexfModuleDynamic;
@@ -23,13 +24,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class LogParser {
-
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	private static Logger logger = Logger.getLogger(LogParser.class);
 	
@@ -108,20 +108,25 @@ public class LogParser {
 			
 		if(representationType == ParsingConstants.GEXF_REPRESENTATION) {
 			System.out.println("\nWould you like to build...");
-			System.out.println("1 - A dynamic graph (with information about time)");
-			System.out.println("2 - An aggregate graph (SocialDIS Experiment)");
-			System.out.println("3 - An aggregate graph (MACRO Experiment)");
-			System.out.print("Please choose 1, 2 or 3: ");
+			System.out.println("1 - A static graph");
+			System.out.println("2 - A dynamic graph (with information about time)");
+			System.out.println("3 - An aggregate graph (SocialDIS Experiment)");
+			System.out.println("4 - An aggregate graph (MACRO Experiment)");
+			System.out.print("Please choose 1, 2, 3 or 4: ");
 			BufferedReader answer = new BufferedReader(new InputStreamReader(System.in));
 			
 			try {
 				String choise = answer.readLine();
-				while(!choise.equals("1") && !choise.equals("2") && !choise.equals("3")) {
-					System.out.print("Please choose 1, 2 or 3: ");
+				while(!choise.equals("1") && !choise.equals("2") && !choise.equals("3") && !choise.equals("4")) {
+					System.out.print("Please choose 1, 2, 3 or 4: ");
 					choise = answer.readLine();
 				}
 				
 				if(choise.equals("1")) {
+					graph = new GexfModule(fileInput, fis);
+					logger.info("Aggregate GEXF Representation initialized.");
+				} else
+				if(choise.equals("2")) {
 					System.out.print("Would you like to create virtual links? [y/N] ");
 					if(answer.readLine().equalsIgnoreCase("y")) {
 						graph = new GexfModuleDynamic(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
@@ -131,11 +136,11 @@ public class LogParser {
 					}
 					logger.info("Dynamic GEXF Representation initialized.");
 				} else
-				if(choise.equals("2")) {
+				if(choise.equals("3")) {
 					graph = new GexfModuleAggregateDIS(fileInput, fis);
 					logger.info("Aggregate DIS GEXF Representation initialized.");
 				} else
-				if(choise.equals("3")) {
+				if(choise.equals("4")) {
 					boolean initReaders = false;
 					System.out.print("Would you like to create reader relationships? [y/N] ");
 					if(answer.readLine().equalsIgnoreCase("y")) {

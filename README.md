@@ -48,6 +48,10 @@ Examples:
 * DNF:
 
 		$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-f logfile.txt -dnf"
+		
+* GEXF:
+
+		$ mvn exec:java -Dexec.mainClass="it.uniroma1.dis.wsngroup.parsing.LogParser" -Dexec.args="-f logfile.txt -gexf"
 
 
 Log example that can be parsed

@@ -20,6 +20,10 @@ import net.sf.javaml.core.Instance;
 import net.sf.javaml.tools.data.FileHandler;
 import net.sf.javaml.tools.weka.WekaClassifier;
 
+/**
+ * @author Francesco Ficarola
+ */
+
 public class NaiveBayesClassificator {
 	
 	private Logger logger = Logger.getLogger(this.getClass());

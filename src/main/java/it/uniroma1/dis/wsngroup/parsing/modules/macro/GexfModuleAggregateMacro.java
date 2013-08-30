@@ -37,13 +37,12 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class GexfModuleAggregateMacro implements GraphRepresentation {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 	
@@ -79,7 +78,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 		
 		// Creazione grafo
 		xmlGraph = new GexfImpl();
-		xmlGraph.getMetadata().setLastModified(new Date()).setCreator("Francesco Ficarola").setDescription("MACRO NEON 2012");
+		xmlGraph.getMetadata().setLastModified(new Date()).setCreator("OpenBeacon Parser").setDescription("MACRO NEON 2012");
 		
 		graph = xmlGraph.getGraph();
 		graph.setDefaultEdgeType(EdgeType.UNDIRECTED).setMode(Mode.STATIC);

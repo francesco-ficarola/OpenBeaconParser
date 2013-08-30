@@ -3,6 +3,10 @@ package it.uniroma1.dis.wsngroup.core.ml;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class AttributeMapping {
 	

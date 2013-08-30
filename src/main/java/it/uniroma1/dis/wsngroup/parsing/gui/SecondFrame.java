@@ -8,12 +8,14 @@
  *
  * Created on May 14, 2012, 1:56:32 PM
  */
-package it.uniroma1.dis.wsngroup.graphic;
+package it.uniroma1.dis.wsngroup.parsing.gui;
 
 /**
  *
  * @author Lorenzo Bergamini
  */
+
+@Deprecated
 public class SecondFrame extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 1L;

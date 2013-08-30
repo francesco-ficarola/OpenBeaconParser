@@ -12,12 +12,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ */
 
 public class Classification {
-
-	/**
-	 * @author Francesco Ficarola
-	 */
 	
 	private static Logger logger = Logger.getLogger(Classification.class);
 	

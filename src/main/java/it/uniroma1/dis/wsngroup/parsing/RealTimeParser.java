@@ -14,13 +14,12 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class RealTimeParser implements RealTimeLogFileTailerListener {
-
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	private static Logger logger = Logger.getLogger(RealTimeParser.class);
 	

@@ -17,8 +17,11 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
-
 //import com.socialdis.core.MapUtil;
+
+/**
+ * @author Francesco Ficarola
+ */
 
 public class MacroDataset {
 	

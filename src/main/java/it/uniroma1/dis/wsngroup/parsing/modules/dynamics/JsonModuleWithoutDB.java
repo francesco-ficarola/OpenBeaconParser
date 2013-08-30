@@ -12,6 +12,11 @@ import java.io.PrintStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class JsonModuleWithoutDB extends AbstractModuleWithoutDB {
 
 	private Gson gson;

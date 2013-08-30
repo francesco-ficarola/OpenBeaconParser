@@ -19,12 +19,12 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.Gson;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class RealTimeModule implements GraphRepresentation {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	

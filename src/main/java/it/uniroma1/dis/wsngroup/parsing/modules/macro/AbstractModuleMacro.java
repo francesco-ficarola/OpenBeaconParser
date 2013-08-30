@@ -21,14 +21,12 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public abstract class AbstractModuleMacro implements GraphRepresentation {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	

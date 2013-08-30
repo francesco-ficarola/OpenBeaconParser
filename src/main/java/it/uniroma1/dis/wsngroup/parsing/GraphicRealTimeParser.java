@@ -12,13 +12,13 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
 
 public class GraphicRealTimeParser implements RealTimeLogFileTailerListener {
 
-    /**
-     * @author Francesco Ficarola
-     *
-     */
     private static Logger logger = Logger.getLogger(GraphicRealTimeParser.class);
     private static FileInputStream fis;
     private static File fileInput;

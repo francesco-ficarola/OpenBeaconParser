@@ -14,6 +14,10 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * @author Francesco Ficarola
+ */
+
 public class ImportJsonData {
 	
 	private Logger logger = Logger.getLogger(this.getClass());

@@ -8,7 +8,7 @@
  *
  * Created on May 14, 2012, 11:23:33 AM
  */
-package it.uniroma1.dis.wsngroup.graphic;
+package it.uniroma1.dis.wsngroup.parsing.gui;
 
 import it.uniroma1.dis.wsngroup.parsing.*;
 
@@ -23,6 +23,8 @@ import javax.swing.JOptionPane;
  *
  * @author Lorenzo Bergamini
  */
+
+@Deprecated
 public class Main extends javax.swing.JFrame {
 
 	private static final long serialVersionUID = 1L;

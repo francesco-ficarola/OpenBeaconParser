@@ -7,6 +7,10 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+/**
+ * @author Francesco Ficarola
+ */
+
 public class RealTimeSimulation {
 	public static void main (String args[]) throws java.lang.InterruptedException {
 

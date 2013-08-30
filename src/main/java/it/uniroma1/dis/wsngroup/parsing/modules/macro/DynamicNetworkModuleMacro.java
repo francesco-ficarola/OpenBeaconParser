@@ -13,12 +13,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class DynamicNetworkModuleMacro extends AbstractModuleMacro {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	private Integer startTS;
 	private Integer endTS;

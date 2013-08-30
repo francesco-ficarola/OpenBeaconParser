@@ -12,6 +12,11 @@ import java.util.Iterator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class JsonModuleDIS extends AbstractModuleDIS {
 
 	private Gson gson;

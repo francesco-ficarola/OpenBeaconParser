@@ -28,12 +28,12 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class AdjacencyMatrixModule implements GraphRepresentation {
-	
-	/**
-	 * @author Francesco Ficarola
-	 *
-	 */
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 	

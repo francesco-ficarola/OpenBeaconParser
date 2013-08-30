@@ -2,6 +2,11 @@ package it.uniroma1.dis.wsngroup.core;
 
 import java.util.List;
 
+/**
+ * @author Francesco Ficarola
+ *
+ */
+
 public class Functions {
 	
 	public static boolean isInteger( String input )  
