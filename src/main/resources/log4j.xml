@@ -9,7 +9,7 @@
 	</appender>
 	
 	<appender name="Generic_File" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="../logs/parser.log"/>
+		<param name="File" value="logs/parser.log"/>
 		<param name="Threshold" value="DEBUG"/>
 		<param name="Append" value="true"/>
 		<layout class="org.apache.log4j.PatternLayout">
