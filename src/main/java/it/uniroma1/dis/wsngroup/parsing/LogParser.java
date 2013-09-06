@@ -4,12 +4,12 @@ import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.core.DateTime;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyListsModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyMatrixModule;
-import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.DynamicNetworkModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.GexfModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.GexfModuleAggregateDIS;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.JsonModuleDIS;
+import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.DnfModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.GexfModuleDynamic;
-import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.JsonModuleWithoutDB;
+import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.JsonModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.NetLogoModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.macro.DynamicNetworkModuleMacro;
 import it.uniroma1.dis.wsngroup.parsing.modules.macro.GexfModuleAggregateMacro;
@@ -185,7 +185,7 @@ public class LogParser {
 				}
 				
 				if(choise.equals("0")) {
-					graph = new JsonModuleWithoutDB(fileInput, fis, vl);
+					graph = new JsonModule(fileInput, fis, vl);
 				} else
 				if(choise.equals("1")) {
 					graph = new JsonModuleDIS(fileInput, fis, vl);
@@ -276,7 +276,7 @@ public class LogParser {
 				}
 				
 				if(choise.equals("0")) {
-					graph = new DynamicNetworkModule(fileInput, fis, vl);
+					graph = new DnfModule(fileInput, fis, vl);
 				} else
 //				if(choise.equals("1")) {
 //					graph = new JsonModuleDIS(fileInput, fis, vl);

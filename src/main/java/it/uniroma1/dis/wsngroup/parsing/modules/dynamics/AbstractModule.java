@@ -1,5 +1,6 @@
 package it.uniroma1.dis.wsngroup.parsing.modules.dynamics;
 
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
 import java.io.BufferedReader;
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  *
  */
 
-public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
+public abstract class AbstractModule implements GraphRepresentation {
 
 	protected Logger logger = Logger.getLogger(this.getClass());
 	
@@ -30,7 +31,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 	private int indexObjects;
 	private String previousTimestamp;
 	
-	public AbstractModuleWithoutDB(File fileInput, FileInputStream fis, boolean createVL) {
+	public AbstractModule(File fileInput, FileInputStream fis, boolean createVL) {
 		this.fileInput = fileInput;
 		this.fis = fis;
 		this.createVL = createVL;
@@ -66,8 +67,8 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		}
 		
 		// Vincolo sul timestamp
-		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(1).replace("t=", "")) >= startTS && 
-				Integer.parseInt(tokens.get(1).replace("t=", "")) <= endTS)) {
+		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) >= startTS && 
+				Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) <= endTS)) {
 			
 			// Gestisci il pacchetto corrente (tags e contatti REALI)
 			managePacket(tokens);
@@ -143,7 +144,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 	private void managePacket(ArrayList<String> tokens) {
 		// Se il timestamp corrente è diverso dal precedente si crea
 		// un nuovo oggetto TimestampObject per memorizzare tutto il necessario
-		String currentTimestamp = tokens.get(1).replace("t=", "");
+		String currentTimestamp = tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "");
 		if(!currentTimestamp.equals(previousTimestamp)) {
 			
 			// Controllo se il sequence number è già presente nell'oggetto
@@ -155,8 +156,8 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			TimestampObject prevTimestampObject = null;
 			if(tsObjectList.size() > 0) {
 				prevTimestampObject = tsObjectList.get(indexObjects-1);
-				String seqNumber = tokens.get(5).replace("seq=", "");
-				String sourceTag = tokens.get(3).replace("id=", "");
+				String seqNumber = tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, "");
+				String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 				for(int i = 0; i < prevTimestampObject.getSeqNumbers().size(); i++) {
 					if(seqNumber.equals(prevTimestampObject.getSeqNumbers().get(i).getSeqNumber()) &&
 							sourceTag.equals(prevTimestampObject.getSeqNumbers().get(i).getTagID())) {
@@ -211,8 +212,8 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 				}
 				
 				if(prevComparingTimestampObject != null) {
-					String seqNumber = tokens.get(5).replace("seq=", "");
-					String sourceTag = tokens.get(3).replace("id=", "");
+					String seqNumber = tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, "");
+					String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 					for(int i = 0; i < prevComparingTimestampObject.getSeqNumbers().size(); i++) {
 						if(seqNumber.equals(prevComparingTimestampObject.getSeqNumbers().get(i).getSeqNumber()) &&
 								sourceTag.equals(prevComparingTimestampObject.getSeqNumbers().get(i).getTagID())) {
@@ -248,7 +249,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		
 		// Memorizzazione del timestamp corrente in previousTimestamp
 		// in modo da poter comparare questo valore con il successivo
-		previousTimestamp = tokens.get(1).replace("t=", "");
+		previousTimestamp = tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "");
 	}
 
 
@@ -260,10 +261,10 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		for(int i = 0; i < tokens.size(); i++) {
 			
 			/* 
-			 * TOKEN "id="
+			 * TOKEN ParsingConstants.SOURCE_PREFIX
 			 */
-			if(tokens.get(i).contains("id=")) {
-				idSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 					
 				// Controllo se il tag è già presente nell'oggetto
 				int existing = -1;
@@ -278,12 +279,12 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 				// Se non esiste, allora lo aggiungo
 				if(existing == -1) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					tsObjectList.get(indexObjects-1).getTags().
 								add(new Tag(idCurrentNode, readerIDs));
 				} else {
 					// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-					String readerID = tokens.get(2).replace("ip=", "");
+					String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 					int existingReader = -1;
 					for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
 						if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
@@ -293,7 +294,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 					}
 					
 					if(existingReader == -1) {
-						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(2).replace("ip=", ""));
+						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					}
 				}
 				
@@ -304,8 +305,8 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			/*
 			 * TOKEN "ip=*"
 			 */
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				
 				// Controllo se il reader è già presente nell'oggetto
 				int existing = -1;
@@ -327,9 +328,9 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			/*
 			 * TOKEN "seq=*"
 			 */
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				String sourceTag = tokens.get(3).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 				
 				// Controllo se il sequence number è già presente nell'array
 				int existing = -1;
@@ -350,7 +351,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			/*
 			 * TOKENS "C" && [xxxx (x)
 			 */
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
 				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 				
 				// Controllo se il tag è già presente nell'oggetto
@@ -366,12 +367,12 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 				// Se non esiste, allora lo aggiungo
 				if(existing == -1) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					tsObjectList.get(indexObjects-1).getTags().
 								add(new Tag(idCurrentNode,readerIDs));
 				} else {
 					// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-					String readerID = tokens.get(2).replace("ip=", "");
+					String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 					int existingReader = -1;
 					for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
 						if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
@@ -381,7 +382,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 					}
 					
 					if(existingReader == -1) {
-						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(2).replace("ip=", ""));
+						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					}
 				}
 				
@@ -421,14 +422,14 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		// Poiché è un duplicato allora aggiornerò soltanto il reader corrente
 		// (se non già presente) nella lista generale ed in quelle dei tag.
 		if(firstElementDuplicate) {
-			logger.info("DUPLICATE (1st)" + " --> timestamp:" + tokens.get(1).replace("t=", "") + " id:" + tokens.get(3).replace("id=", "") + " seq:" + tokens.get(5).replace("seq=", ""));
+			logger.info("DUPLICATE (1st)" + " --> timestamp:" + tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "") + " id:" + tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "") + " seq:" + tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, ""));
 		} else {
-			logger.info("DUPLICATE" + " --> timestamp:" + tokens.get(1).replace("t=", "") + " id:" + tokens.get(3).replace("id=", "") + " seq:" + tokens.get(5).replace("seq=", ""));
+			logger.info("DUPLICATE" + " --> timestamp:" + tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "") + " id:" + tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "") + " seq:" + tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, ""));
 		}
 		
 		// Controllo se il reader corrente è presente nella
 		// lista dei reader dell'oggetto Timestamp precedente.
-		String idReader = tokens.get(2).replace("ip=", "");
+		String idReader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 		int existingReader = -1;
 		for(int i = 0; i < prevComparingTimestampObject.getReaders().size(); i++) {
 			if(idReader.equals(prevComparingTimestampObject.getReaders().get(i).getReaderID())) {
@@ -455,8 +456,8 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		for(int i = 0; i < tokens.size(); i++) {
 			
 			// Nodo source
-			if(tokens.get(i).contains("id=")) {
-				String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				for(int j = 0; j < prevVisitors.size(); j++) {
 					if(idBadgeSourceNode.equals(String.valueOf(prevVisitors.get(j).getTagID()))) {
 						boolean readerInTag = false;
@@ -477,7 +478,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			else
 			
 			// Nodo target
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
 				String idBadgeTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 				for(int j = 0; j < prevVisitors.size(); j++) {
 					if(idBadgeTargetNode.equals(String.valueOf(prevVisitors.get(j).getTagID()))) {
@@ -507,7 +508,7 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 		
 		timestampObject.setId(indexObjects);
 		
-		timestampObject.setTimestamp(tokens.get(1).replace("t=", ""));
+		timestampObject.setTimestamp(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 		
 		ArrayList<Tag> tags = new ArrayList<Tag>();
 		timestampObject.setTags(tags);
@@ -527,35 +528,35 @@ public abstract class AbstractModuleWithoutDB implements GraphRepresentation {
 			 * RILEVAMENTI
 			 */
 			
-			if(tokens.get(i).contains("id=")) {
-				idSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				ArrayList<String> readerIDs = new ArrayList<String>();
-				readerIDs.add(tokens.get(2).replace("ip=", ""));
+				readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 				tags.add(new Tag(idSourceNode, readerIDs));
 				
 			}
 			
 			else
 			
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				readers.add(new Reader(idReader));
 			}
 			
 			else					
 			
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				String sourceTag = tokens.get(3).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 				
 				seqs.add(new Seq(seqNumber, sourceTag));
 			}
 			
 			
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
 				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 				ArrayList<String> readerIDs = new ArrayList<String>();
-				readerIDs.add(tokens.get(2).replace("ip=", ""));
+				readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 				tags.add(new Tag(idTargetNode, readerIDs));
 			
 				ArrayList<String> edgeAttr = new ArrayList<String>();

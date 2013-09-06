@@ -27,7 +27,7 @@ import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
  *
  */
 
-public class GexfModuleDynamic extends AbstractModuleWithoutDB {
+public class GexfModuleDynamic extends AbstractModule {
 	
 	private Gexf xmlGraph;
 	private Graph graph;

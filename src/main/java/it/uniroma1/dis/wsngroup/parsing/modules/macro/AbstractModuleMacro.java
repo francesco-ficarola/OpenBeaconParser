@@ -1,6 +1,7 @@
 package it.uniroma1.dis.wsngroup.parsing.modules.macro;
 
 import it.uniroma1.dis.wsngroup.constants.DBConstants;
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.db.DBObject;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
@@ -77,7 +78,7 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 		}
 		
 		if(tokens.size() > 1) {
-			String currentTimestamp = tokens.get(1).replace("t=", "");
+			String currentTimestamp = tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "");
 			
 			// Vincolo sul timestamp
 			if(Integer.parseInt(currentTimestamp) >= startTS && Integer.parseInt(currentTimestamp) <= endTS) {
@@ -167,8 +168,8 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			TimestampObject prevTimestampObject = null;
 			if(tsObjectList.size() > 0) {
 				prevTimestampObject = tsObjectList.get(indexObjects-1);
-				String seqNumber = tokens.get(5).replace("seq=", "");
-				Integer sourceTag = Integer.parseInt(tokens.get(3).replace("id=", ""));
+				String seqNumber = tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, "");
+				Integer sourceTag = Integer.parseInt(tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, ""));
 				for(int i = 0; i < prevTimestampObject.getSeqNumbers().size(); i++) {
 					if(seqNumber.equals(prevTimestampObject.getSeqNumbers().get(i).getSeqNumber()) &&
 							sourceTag.equals(prevTimestampObject.getSeqNumbers().get(i).getTagID())) {
@@ -222,8 +223,8 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 				}
 				
 				if(prevComparingTimestampObject != null) {
-					String seqNumber = tokens.get(5).replace("seq=", "");
-					Integer sourceTag = Integer.parseInt(tokens.get(3).replace("id=", ""));
+					String seqNumber = tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, "");
+					Integer sourceTag = Integer.parseInt(tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, ""));
 					for(int i = 0; i < prevComparingTimestampObject.getSeqNumbers().size(); i++) {
 						if(seqNumber.equals(prevComparingTimestampObject.getSeqNumbers().get(i).getSeqNumber()) &&
 								sourceTag.equals(prevComparingTimestampObject.getSeqNumbers().get(i).getTagID())) {
@@ -271,10 +272,10 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 		for(int i = 0; i < tokens.size(); i++) {
 			
 			/* 
-			 * TOKEN "id="
+			 * TOKEN ParsingConstants.SOURCE_PREFIX
 			 */
-			if(tokens.get(i).contains("id=")) {
-				String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeSourceNode), currentTimestamp);
 				if(indexNodeDB >= 0) {
 										
@@ -293,12 +294,12 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 					// Se non esiste, allora lo aggiungo
 					if(existing == -1) {
 						ArrayList<String> readerIDs = new ArrayList<String>();
-						readerIDs.add(tokens.get(2).replace("ip=", ""));
+						readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 						visitor.setReaderIDs(readerIDs);
 						tsObjectList.get(indexObjects-1).getVisitors().add(visitor);
 					} else {
 						// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-						String readerID = tokens.get(2).replace("ip=", "");
+						String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 						int existingReader = -1;
 						for(int z = 0; z < tsObjectList.get(indexObjects-1).getVisitors().get(existing).getReaderIDs().size(); z++) {
 							if(readerID.equals(tsObjectList.get(indexObjects-1).getVisitors().get(existing).getReaderIDs().get(z))) {
@@ -321,8 +322,8 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			/*
 			 * TOKEN "ip=*"
 			 */
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				
 				// Controllo se il reader è già presente nell'oggetto
 				int existing = -1;
@@ -345,9 +346,9 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			/*
 			 * TOKEN "seq=*"
 			 */
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				Integer sourceTag = Integer.parseInt(tokens.get(3).replace("id=", ""));
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				Integer sourceTag = Integer.parseInt(tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, ""));
 				
 				// Controllo se il sequence number è già presente nell'array
 				int existing = -1;
@@ -368,7 +369,7 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			/*
 			 * TOKENS "C" && [xxxx (x)
 			 */
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
 				String idBadgeTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\d+\\x29", "");
 				
 				int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeTargetNode), currentTimestamp);
@@ -389,12 +390,12 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 					// Se non esiste, allora lo aggiungo
 					if(existing == -1) {
 						ArrayList<String> readerIDs = new ArrayList<String>();
-						readerIDs.add(tokens.get(2).replace("ip=", ""));
+						readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 						visitor.setReaderIDs(readerIDs);
 						tsObjectList.get(indexObjects-1).getVisitors().add(visitor);
 					} else {
 						// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-						String readerID = tokens.get(2).replace("ip=", "");
+						String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 						int existingReader = -1;
 						for(int z = 0; z < tsObjectList.get(indexObjects-1).getVisitors().get(existing).getReaderIDs().size(); z++) {
 							if(readerID.equals(tsObjectList.get(indexObjects-1).getVisitors().get(existing).getReaderIDs().get(z))) {
@@ -448,14 +449,14 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 		// Poiché è un duplicato allora aggiornerò soltanto il reader corrente
 		// (se non già presente) nella lista generale ed in quelle dei tag.
 		if(firstElementDuplicate) {
-			logger.info("DUPLICATE (1st)" + " --> timestamp:" + tokens.get(1).replace("t=", "") + " id:" + tokens.get(3).replace("id=", "") + " seq:" + tokens.get(5).replace("seq=", ""));
+			logger.info("DUPLICATE (1st)" + " --> timestamp:" + tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "") + " id:" + tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "") + " seq:" + tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, ""));
 		} else {
-			logger.info("DUPLICATE" + " --> timestamp:" + tokens.get(1).replace("t=", "") + " id:" + tokens.get(3).replace("id=", "") + " seq:" + tokens.get(5).replace("seq=", ""));
+			logger.info("DUPLICATE" + " --> timestamp:" + tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "") + " id:" + tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "") + " seq:" + tokens.get(ParsingConstants.SEQ_INDEX).replace(ParsingConstants.SEQ_PREFIX, ""));
 		}
 		
 		// Controllo se il reader corrente è presente nella
 		// lista dei reader dell'oggetto Timestamp precedente.
-		String idReader = tokens.get(2).replace("ip=", "");
+		String idReader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 		int existingReader = -1;
 		for(int i = 0; i < prevComparingTimestampObject.getReaders().size(); i++) {
 			if(idReader.equals(prevComparingTimestampObject.getReaders().get(i).getReaderID())) {
@@ -482,8 +483,8 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 		for(int i = 0; i < tokens.size(); i++) {
 			
 			// Nodo source
-			if(tokens.get(i).contains("id=")) {
-				String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				for(int j = 0; j < prevVisitors.size(); j++) {
 					if(idBadgeSourceNode.equals(String.valueOf(prevVisitors.get(j).getBadgeid()))) {
 						boolean readerInTag = false;
@@ -504,7 +505,7 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			else
 			
 			// Nodo target
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
 				String idBadgeTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\d+\\x29", "");
 				for(int j = 0; j < prevVisitors.size(); j++) {
 					if(idBadgeTargetNode.equals(String.valueOf(prevVisitors.get(j).getBadgeid()))) {
@@ -554,12 +555,12 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			 * RILEVAMENTI
 			 */
 			
-			if(tokens.get(i).contains("id=")) {
-				String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeSourceNode), currentTimestamp);
 				if(indexNodeDB >= 0) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					Visitor visitor = new Visitor(usersDB.get(indexNodeDB));
 					visitor.setReaderIDs(readerIDs);
 					idPersonSourceNode = visitor.getPersonid();
@@ -572,28 +573,28 @@ public abstract class AbstractModuleMacro implements GraphRepresentation {
 			
 			else
 			
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				//TODO implementare la ricerca per la stanza ed il piano
 				readers.add(new Reader(idReader,"compareRoom"));
 			}
 			
 			else					
 			
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				Integer badgeSourceNode = Integer.parseInt(tokens.get(3).replace("id=", ""));
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				Integer badgeSourceNode = Integer.parseInt(tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, ""));
 				
 				seqs.add(new Seq(seqNumber, badgeSourceNode));
 			}
 			
 			
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\d+.*")) {
 				String idBadgeTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\d+\\x29", "");
 				int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeTargetNode), currentTimestamp);
 				if(indexNodeDB >= 0) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					Visitor visitor = new Visitor(usersDB.get(indexNodeDB));
 					visitor.setReaderIDs(readerIDs);
 					idPersonTargetNode = visitor.getPersonid();

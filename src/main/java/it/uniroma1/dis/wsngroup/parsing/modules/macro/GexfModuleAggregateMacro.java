@@ -14,6 +14,7 @@ import it.uniroma1.dis.wsngroup.gexf4j.core.impl.GexfImpl;
 import it.uniroma1.dis.wsngroup.gexf4j.core.impl.StaxGraphWriter;
 import it.uniroma1.dis.wsngroup.gexf4j.core.impl.data.AttributeListImpl;
 import it.uniroma1.dis.wsngroup.constants.DBConstants;
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.db.DBObject;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
@@ -177,7 +178,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 		
 		if(tokens.size() > 1) {
 			
-			Integer currentTimestamp = Integer.parseInt(tokens.get(1).replace("t=", ""));
+			Integer currentTimestamp = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 		
 			// Vincolo sul timestamp
 			if(currentTimestamp >= startTS && currentTimestamp <= endTS) {
@@ -185,10 +186,10 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 				// Memorizzazione del primo e dell'ultimo TS reali
 				// (serviranno per calcolare la normalizzazione)
 				if(!firstLogRow) {
-					startRealTS = Integer.parseInt(tokens.get(1).replace("t=", ""));
+					startRealTS = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 					firstLogRow = true;
 				} else {
-					stopRealTS = Integer.parseInt(tokens.get(1).replace("t=", ""));
+					stopRealTS = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 				}
 				
 				
@@ -200,10 +201,10 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 					/* 
 					 * RILEVAMENTI
 					 */				
-					if(tokens.get(0).equals("S")) {
-						if(tokens.get(i).contains("id=")) {
+					if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("S")) {
+						if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
 							List<Node> listNodes = graph.getNodes();
-							String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+							String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 							
 							int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeSourceNode), currentTimestamp);
 							
@@ -232,13 +233,13 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 										addValue(attGroup, String.valueOf(visitor.getGroupid()));
 									
 									if(initReaders) {
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(node, reader);
 									}
 								} else {
 									if(initReaders) {
 										Node node = listNodes.get(indexSearchedNode.intValue());
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(node, reader);
 									}
 								}
@@ -251,11 +252,11 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 					
 					else
 					
-					if(tokens.get(0).equals("C")) {
+					if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C")) {
 						
-						if(tokens.get(i).contains("id=")) {						
+						if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {						
 							List<Node> listNodes = graph.getNodes();
-							String idBadgeSourceNode = tokens.get(i).replace("id=", "");
+							String idBadgeSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 							
 							int indexNodeDB = searchVisitorInDB(Integer.parseInt(idBadgeSourceNode), currentTimestamp);
 							
@@ -284,7 +285,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 										addValue(attGroup, String.valueOf(visitor.getGroupid()));
 									
 									if(initReaders) {
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(sourceNode, reader);
 									}
 									
@@ -294,7 +295,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 									sourceNode = listNodes.get(indexSearchedNode.intValue());
 									
 									if(initReaders) {
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(sourceNode, reader);
 									}
 								}
@@ -348,7 +349,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 										addValue(attGroup, String.valueOf(visitor.getGroupid()));
 									
 									if(initReaders) {
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(targetNode, reader);
 									}
 									
@@ -358,7 +359,7 @@ public class GexfModuleAggregateMacro implements GraphRepresentation {
 									targetNode = listNodes.get(indexSearchedNode.intValue());
 									
 									if(initReaders) {
-										String reader = tokens.get(2).replace("ip=", "");
+										String reader = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 										createEdgeNodeAndReader(targetNode, reader);
 									}
 								}

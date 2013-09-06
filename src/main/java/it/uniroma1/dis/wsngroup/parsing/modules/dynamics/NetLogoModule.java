@@ -12,7 +12,7 @@ import java.util.Iterator;
  *
  */
 
-public class NetLogoModule extends AbstractModuleWithoutDB {
+public class NetLogoModule extends AbstractModule {
 	
 	private boolean initReaders;
 	

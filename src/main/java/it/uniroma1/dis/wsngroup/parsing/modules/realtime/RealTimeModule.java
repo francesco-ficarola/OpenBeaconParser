@@ -1,5 +1,6 @@
 package it.uniroma1.dis.wsngroup.parsing.modules.realtime;
 
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
 import java.io.BufferedReader;
@@ -73,8 +74,8 @@ public class RealTimeModule implements GraphRepresentation {
 		}
 		
 		// Vincolo sul timestamp
-		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(1).replace("t=", "")) >= startTS && 
-				Integer.parseInt(tokens.get(1).replace("t=", "")) <= endTS)) {
+		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) >= startTS && 
+				Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) <= endTS)) {
 			
 			// Gestisci il pacchetto corrente (tags e contatti REALI)
 			managePacket(tokens);
@@ -150,7 +151,7 @@ public class RealTimeModule implements GraphRepresentation {
 	private void managePacket(ArrayList<String> tokens) {
 		// Se il timestamp corrente è diverso dal precedente si crea
 		// un nuovo oggetto TimestampObject per memorizzare tutto il necessario
-		String currentTimestamp = tokens.get(1).replace("t=", "");
+		String currentTimestamp = tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "");
 		if(!currentTimestamp.equals(previousTimestamp)) {
 			if(tsObjectList.size() > 0) {
 				// Chiamo il metodo realTimeWriteFile() passando l'oggetto TimestampObject
@@ -171,7 +172,7 @@ public class RealTimeModule implements GraphRepresentation {
 		
 		// Memorizzazione del timestamp corrente in previousTimestamp
 		// in modo da poter comparare questo valore con il successivo
-		previousTimestamp = tokens.get(1).replace("t=", "");
+		previousTimestamp = tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "");
 	}
 
 
@@ -182,11 +183,8 @@ public class RealTimeModule implements GraphRepresentation {
 		
 		for(int i = 0; i < tokens.size(); i++) {
 			
-			/* 
-			 * TOKEN "id="
-			 */
-			if(tokens.get(i).contains("id=")) {
-				idSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 					
 				// Controllo se il tag è già presente nell'oggetto
 				int existing = -1;
@@ -201,12 +199,12 @@ public class RealTimeModule implements GraphRepresentation {
 				// Se non esiste, allora lo aggiungo
 				if(existing == -1) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					tsObjectList.get(indexObjects-1).getTags().
 								add(new Tag(idCurrentNode, readerIDs));
 				} else {
 					// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-					String readerID = tokens.get(2).replace("ip=", "");
+					String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 					int existingReader = -1;
 					for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
 						if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
@@ -216,7 +214,7 @@ public class RealTimeModule implements GraphRepresentation {
 					}
 					
 					if(existingReader == -1) {
-						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(2).replace("ip=", ""));
+						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					}
 				}
 				
@@ -227,8 +225,8 @@ public class RealTimeModule implements GraphRepresentation {
 			/*
 			 * TOKEN "ip=*"
 			 */
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				
 				// Controllo se il reader è già presente nell'oggetto
 				int existing = -1;
@@ -250,9 +248,9 @@ public class RealTimeModule implements GraphRepresentation {
 			/*
 			 * TOKEN "seq=*"
 			 */
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				String sourceTag = tokens.get(3).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 				
 				// Controllo se il sequence number è già presente nell'array
 				int existing = -1;
@@ -273,7 +271,7 @@ public class RealTimeModule implements GraphRepresentation {
 			/*
 			 * TOKENS "C" && [xxxx (x)
 			 */
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
 				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 				
 				// Controllo se il tag è già presente nell'oggetto
@@ -289,12 +287,12 @@ public class RealTimeModule implements GraphRepresentation {
 				// Se non esiste, allora lo aggiungo
 				if(existing == -1) {
 					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(2).replace("ip=", ""));
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					tsObjectList.get(indexObjects-1).getTags().
 								add(new Tag(idCurrentNode,readerIDs));
 				} else {
 					// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-					String readerID = tokens.get(2).replace("ip=", "");
+					String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
 					int existingReader = -1;
 					for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
 						if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
@@ -304,7 +302,7 @@ public class RealTimeModule implements GraphRepresentation {
 					}
 					
 					if(existingReader == -1) {
-						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(2).replace("ip=", ""));
+						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 					}
 				}
 				
@@ -348,7 +346,7 @@ public class RealTimeModule implements GraphRepresentation {
 		
 		timestampObject.setId(indexObjects);
 		
-		timestampObject.setTimestamp(tokens.get(1).replace("t=", ""));
+		timestampObject.setTimestamp(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 		
 		ArrayList<Tag> tags = new ArrayList<Tag>();
 		timestampObject.setTags(tags);
@@ -368,35 +366,35 @@ public class RealTimeModule implements GraphRepresentation {
 			 * RILEVAMENTI
 			 */
 			
-			if(tokens.get(i).contains("id=")) {
-				idSourceNode = tokens.get(i).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+				idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 				ArrayList<String> readerIDs = new ArrayList<String>();
-				readerIDs.add(tokens.get(2).replace("ip=", ""));
+				readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 				tags.add(new Tag(idSourceNode, readerIDs));
 				
 			}
 			
 			else
 			
-			if(tokens.get(i).contains("ip=")) {
-				String idReader = tokens.get(i).replace("ip=", "");
+			if(tokens.get(i).contains(ParsingConstants.READER_PREFIX)) {
+				String idReader = tokens.get(i).replace(ParsingConstants.READER_PREFIX, "");
 				readers.add(new Reader(idReader));
 			}
 			
 			else					
 			
-			if(tokens.get(i).contains("seq=")) {
-				String seqNumber = tokens.get(i).replace("seq=", "");
-				String sourceTag = tokens.get(3).replace("id=", "");
+			if(tokens.get(i).contains(ParsingConstants.SEQ_PREFIX)) {
+				String seqNumber = tokens.get(i).replace(ParsingConstants.SEQ_PREFIX, "");
+				String sourceTag = tokens.get(ParsingConstants.SOURCE_INDEX).replace(ParsingConstants.SOURCE_PREFIX, "");
 				
 				seqs.add(new Seq(seqNumber, sourceTag));
 			}
 			
 			
-			if(tokens.get(0).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
+			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
 				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 				ArrayList<String> readerIDs = new ArrayList<String>();
-				readerIDs.add(tokens.get(2).replace("ip=", ""));
+				readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
 				tags.add(new Tag(idTargetNode, readerIDs));
 			
 				ArrayList<String> edgeAttr = new ArrayList<String>();

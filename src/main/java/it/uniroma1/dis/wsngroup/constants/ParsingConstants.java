@@ -6,6 +6,17 @@ package it.uniroma1.dis.wsngroup.constants;
  */
 
 public class ParsingConstants {
+	public static final int TYPE_MESSAGE_INDEX = 0;
+	public static final int TIMESTAMP_INDEX = 1;
+	public static final int READER_INDEX = 2;
+	public static final int SOURCE_INDEX = 3;
+	public static final int CUSTOM_INDEX = 4;
+	public static final int SEQ_INDEX = 5;
+	public static final String TIMESTAMP_PREFIX = "t=";
+	public static final String READER_PREFIX = "ip=";
+	public static final String SOURCE_PREFIX = "id=";
+	public static final String CUSTOM_PREFIX = "boot_count=";
+	public static final String SEQ_PREFIX = "seq=";
 	
 	public static final int ADJACENCY_LISTS_REPRESENTATION = 1;
 	public static final int ADJACENCY_MATRIX_REPRESENTATION = 2;

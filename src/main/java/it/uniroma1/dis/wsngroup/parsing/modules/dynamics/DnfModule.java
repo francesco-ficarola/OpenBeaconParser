@@ -1,6 +1,5 @@
-package it.uniroma1.dis.wsngroup.parsing.modules.aggregate;
+package it.uniroma1.dis.wsngroup.parsing.modules.dynamics;
 
-import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.AbstractModuleWithoutDB;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +19,7 @@ import java.util.TreeMap;
  *
  */
 
-public class DynamicNetworkModule extends AbstractModuleWithoutDB {
+public class DnfModule extends AbstractModule {
 	
 	private Integer startTS;
 	private Integer endTS;
@@ -31,7 +30,7 @@ public class DynamicNetworkModule extends AbstractModuleWithoutDB {
 	private Map<String, Integer> nodesLastTSMap;
 	private Map<ArrayList<String>, Integer> edgesLastTSMap;
 
-	public DynamicNetworkModule(File fileInput, FileInputStream fis, boolean createVL) {
+	public DnfModule(File fileInput, FileInputStream fis, boolean createVL) {
 		super(fileInput, fis, createVL);
 		firstTS = false;
 		nodesMap = new HashMap<String, NodeRecord>();

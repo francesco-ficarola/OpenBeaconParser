@@ -90,10 +90,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		
 		
 		// Vincolo sul timestamp
-		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(1).replace("t=", "")) >= startTS &&
-				Integer.parseInt(tokens.get(1).replace("t=", "")) <= endTS)) {
+		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) >= startTS &&
+				Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) <= endTS)) {
 			
-			currentTS = Integer.parseInt(tokens.get(1).replace("t=", ""));
+			currentTS = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 			
 			for(int i = 0; i < tokens.size(); i++) {
 
@@ -101,10 +101,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 				 * RILEVAMENTI
 				 */
 				
-				if(tokens.get(0).equals("S")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("S")) {
 									
-					if(tokens.get(i).contains("id=")) {
-						idSourceElement = tokens.get(i).replace("id=", "");
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+						idSourceElement = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 						
 						// Se non esiste l'elemento nell'header riga o colonna
 						// allora provvedo ad aggiungerlo nella matrice
@@ -112,7 +112,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 							adjacencyMatrix.put(idSourceElement, idSourceElement, "0");
 						}
 						
-						Integer count = Integer.parseInt(tokens.get(4).replace("boot_count=", ""));
+						Integer count = Integer.parseInt(tokens.get(ParsingConstants.CUSTOM_INDEX).replace(ParsingConstants.CUSTOM_PREFIX, ""));
 						
 						if(!fmSketch.containsKey(idSourceElement)) {
 							fmSketch.put(idSourceElement, count);
@@ -125,10 +125,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 				
 				else
 				
-				if(tokens.get(0).equals("C")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C")) {
 					
-					if(tokens.get(i).contains("id=")) {
-						idSourceElement = tokens.get(i).replace("id=", "");
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+						idSourceElement = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 						
 						// Se non esiste l'elemento nell'header riga o colonna
 						// allora provvedo ad aggiungerlo nella matrice

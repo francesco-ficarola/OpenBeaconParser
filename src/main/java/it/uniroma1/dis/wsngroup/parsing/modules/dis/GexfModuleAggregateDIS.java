@@ -32,6 +32,7 @@ import it.uniroma1.dis.wsngroup.gexf4j.core.impl.GexfImpl;
 import it.uniroma1.dis.wsngroup.gexf4j.core.impl.StaxGraphWriter;
 import it.uniroma1.dis.wsngroup.gexf4j.core.impl.data.AttributeListImpl;
 import it.uniroma1.dis.wsngroup.constants.DBConstants;
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.db.DBObject;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
@@ -115,16 +116,16 @@ public class GexfModuleAggregateDIS implements GraphRepresentation {
 		}
 		
 		// Vincolo sul timestamp
-		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(1).replace("t=", "")) >= startTS &&
-				Integer.parseInt(tokens.get(1).replace("t=", "")) <= endTS)) {
+		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) >= startTS &&
+				Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) <= endTS)) {
 			
 			// Memorizzazione del primo e dell'ultimo TS reali
 			// (serviranno per calcolare la normalizzazione)
 			if(!firstLogRow) {
-				startRealTS = Integer.parseInt(tokens.get(1).replace("t=", ""));
+				startRealTS = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 				firstLogRow = true;
 			} else {
-				stopRealTS = Integer.parseInt(tokens.get(1).replace("t=", ""));
+				stopRealTS = Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, ""));
 			}
 			
 			
@@ -136,10 +137,10 @@ public class GexfModuleAggregateDIS implements GraphRepresentation {
 				/* 
 				 * RILEVAMENTI
 				 */				
-				if(tokens.get(0).equals("S")) {
-					if(tokens.get(i).contains("id=")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("S")) {
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
 						List<Node> listNode = xmlGraph.getGraph().getNodes();
-						idSourceNode = tokens.get(i).replace("id=", "");
+						idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 						Integer indexSearchedNode = searchIndexNode(listNode, idSourceNode);
 						
 						// Se non esiste un nodo con id  uguale a
@@ -165,11 +166,11 @@ public class GexfModuleAggregateDIS implements GraphRepresentation {
 				
 				else
 				
-				if(tokens.get(0).equals("C")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C")) {
 					
-					if(tokens.get(i).contains("id=")) {						
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {						
 						List<Node> listNode = xmlGraph.getGraph().getNodes();
-						idSourceNode = tokens.get(i).replace("id=", "");
+						idSourceNode = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 						Integer indexSearchedNode = searchIndexNode(listNode, idSourceNode);
 						
 						// Se non esiste un nodo con id  uguale a

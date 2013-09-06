@@ -4,11 +4,11 @@ import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.core.DateTime;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyListsModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.AdjacencyMatrixModule;
-import it.uniroma1.dis.wsngroup.parsing.modules.aggregate.DynamicNetworkModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.GexfModuleAggregateDIS;
 import it.uniroma1.dis.wsngroup.parsing.modules.dis.JsonModuleDIS;
+import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.DnfModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.GexfModuleDynamic;
-import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.JsonModuleWithoutDB;
+import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.JsonModule;
 import it.uniroma1.dis.wsngroup.parsing.modules.dynamics.NetLogoModule;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
@@ -119,12 +119,12 @@ public class GraphicLogParser {
                 graph = new JsonModuleDIS(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
                 listGraphOut = listGraphOut + "_virtual_links";
             } else if (values[2].equals("YES") && (values[3].equals("NotUseDB"))) {
-                graph = new JsonModuleWithoutDB(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
+                graph = new JsonModule(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
                 listGraphOut = listGraphOut + "_virtual_links";
             } else if (values[2].equals("NO") && (values[3].equals("UseDB"))) {
                 graph = new JsonModuleDIS(fileInput, fis, !ParsingConstants.CREATE_VIRTUAL_LINKS);
             } else if (values[2].equals("NO") && (values[3].equals("NotUseDB"))) {
-                graph = new JsonModuleWithoutDB(fileInput, fis, !ParsingConstants.CREATE_VIRTUAL_LINKS);
+                graph = new JsonModule(fileInput, fis, !ParsingConstants.CREATE_VIRTUAL_LINKS);
             }
 
             logger.info("JSON Representation initialized.");
@@ -138,10 +138,10 @@ public class GraphicLogParser {
             logger.info("NetLogo Representation initialized.");
         } else if (representationType == ParsingConstants.DNF_REPRESENTATION) {
             if (values[2].equals("YES")) {
-                graph = new DynamicNetworkModule(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
+                graph = new DnfModule(fileInput, fis, ParsingConstants.CREATE_VIRTUAL_LINKS);
                 listGraphOut = listGraphOut + "_virtual_links";
             } else {
-                graph = new DynamicNetworkModule(fileInput, fis, !ParsingConstants.CREATE_VIRTUAL_LINKS);
+                graph = new DnfModule(fileInput, fis, !ParsingConstants.CREATE_VIRTUAL_LINKS);
             }
 
             logger.info("DNF Representation initialized.");

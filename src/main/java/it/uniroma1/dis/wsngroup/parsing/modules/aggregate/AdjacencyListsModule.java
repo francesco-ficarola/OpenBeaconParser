@@ -1,5 +1,6 @@
 package it.uniroma1.dis.wsngroup.parsing.modules.aggregate;
 
+import it.uniroma1.dis.wsngroup.constants.ParsingConstants;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
 import java.io.BufferedReader;
@@ -74,8 +75,8 @@ public class AdjacencyListsModule implements GraphRepresentation {
 		
 		
 		// Vincolo sul timestamp
-		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(1).replace("t=", "")) >= startTS && 
-				Integer.parseInt(tokens.get(1).replace("t=", "")) <= endTS)) {
+		if(tokens.size() > 1 && (Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) >= startTS && 
+				Integer.parseInt(tokens.get(ParsingConstants.TIMESTAMP_INDEX).replace(ParsingConstants.TIMESTAMP_PREFIX, "")) <= endTS)) {
 			
 			for(int i = 0; i < tokens.size(); i++) {
 				
@@ -83,10 +84,10 @@ public class AdjacencyListsModule implements GraphRepresentation {
 				 * RILEVAMENTI
 				 */
 				
-				if(tokens.get(0).equals("S")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("S")) {
 									
-					if(tokens.get(i).contains("id=")) {
-						idSourceElement = tokens.get(i).replace("id=", "");
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+						idSourceElement = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 						
 						// Se non esiste una chiave nella HashMap uguale
 						// a "idSourceElement" allora provvedo a crearla.
@@ -99,10 +100,10 @@ public class AdjacencyListsModule implements GraphRepresentation {
 				
 				else
 				
-				if(tokens.get(0).equals("C")) {
+				if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C")) {
 							
-					if(tokens.get(i).contains("id=")) {
-						idSourceElement = tokens.get(i).replace("id=", "");
+					if(tokens.get(i).contains(ParsingConstants.SOURCE_PREFIX)) {
+						idSourceElement = tokens.get(i).replace(ParsingConstants.SOURCE_PREFIX, "");
 									
 						// Se non esiste una chiave nella HashMap uguale
 						// a "idSourceElement" allora provvedo a crearla.

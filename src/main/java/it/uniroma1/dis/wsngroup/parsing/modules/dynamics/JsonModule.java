@@ -17,11 +17,11 @@ import com.google.gson.GsonBuilder;
  *
  */
 
-public class JsonModuleWithoutDB extends AbstractModuleWithoutDB {
+public class JsonModule extends AbstractModule {
 
 	private Gson gson;
 	
-	public JsonModuleWithoutDB(File fileInput, FileInputStream fis, boolean createVL) {
+	public JsonModule(File fileInput, FileInputStream fis, boolean createVL) {
 		super(fileInput, fis, createVL);
 		if(LogParser.prettyJSON) {
 			gson = new GsonBuilder().setPrettyPrinting().create();
