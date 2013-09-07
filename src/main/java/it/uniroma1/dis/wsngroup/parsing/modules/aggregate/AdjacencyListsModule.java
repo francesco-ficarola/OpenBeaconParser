@@ -127,45 +127,49 @@ public class AdjacencyListsModule implements GraphRepresentation {
 					// \\x28 = (
 					// \\x29 = )
 					if(tokens.get(i).matches("\\x5b\\w+.*")) {
-						idTargetElement = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
-	
-						// Se non esiste gia' un contatto per il nodo rappresentato
-						// dall'indice della lista, allora provvedo ad aggiungerlo.
-						boolean exist = false;
-						for(int j=0; j<adjacencyList.get(idSourceElement).size(); j++) {
-							if(adjacencyList.get(idSourceElement).get(j).equals(idTargetElement)) {
-								exist = true;
-								break;
-							}
-						}
+						Integer power = Integer.parseInt(tokens.get(i).replaceAll("\\x5b\\d+|\\x28|\\x29", ""));
 						
-						// Se non c'e' nessuna corrispondenza (ovvero il contatto cercato
-						// non esiste in lista) allora lo aggiungo alla fine della lista
-						if(!exist) {
-							adjacencyList.get(idSourceElement).add(idTargetElement);
+						if(power <= ParsingConstants.MAX_CONTACT_POWER) {
+							idTargetElement = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
+		
+							// Se non esiste gia' un contatto per il nodo rappresentato
+							// dall'indice della lista, allora provvedo ad aggiungerlo.
+							boolean exist = false;
+							for(int j=0; j<adjacencyList.get(idSourceElement).size(); j++) {
+								if(adjacencyList.get(idSourceElement).get(j).equals(idTargetElement)) {
+									exist = true;
+									break;
+								}
+							}
 							
-							// Se esiste gia' una lista con indice pari a idTargetElement
-							// aggiungo a tale lista il contatto idSourceElement in
-							// modo da rendere perpendicolari l'insieme delle liste.
-							// Viceversa, se non dovesse esistere, la creo e successivamente
-							// aggiungo a tale lista il contatto idSourceElement.
-							if(adjacencyList.containsKey(idTargetElement)) {
-								boolean existTarget = false;
-								for(int j=0; j<adjacencyList.get(idTargetElement).size(); j++) {
-									if(adjacencyList.get(idTargetElement).get(j).equals(idSourceElement)) {
-										existTarget = true;
-										break;
-									}
-								}
+							// Se non c'e' nessuna corrispondenza (ovvero il contatto cercato
+							// non esiste in lista) allora lo aggiungo alla fine della lista
+							if(!exist) {
+								adjacencyList.get(idSourceElement).add(idTargetElement);
 								
-								if(!existTarget) {
-									adjacencyList.get(idTargetElement).add(idSourceElement);
-								}
-							} else {
-								LinkedList<String> currentList = new LinkedList<String>();
-								currentList.add(idSourceElement);
-								adjacencyList.put(idTargetElement, currentList);
-							}				
+								// Se esiste gia' una lista con indice pari a idTargetElement
+								// aggiungo a tale lista il contatto idSourceElement in
+								// modo da rendere perpendicolari l'insieme delle liste.
+								// Viceversa, se non dovesse esistere, la creo e successivamente
+								// aggiungo a tale lista il contatto idSourceElement.
+								if(adjacencyList.containsKey(idTargetElement)) {
+									boolean existTarget = false;
+									for(int j=0; j<adjacencyList.get(idTargetElement).size(); j++) {
+										if(adjacencyList.get(idTargetElement).get(j).equals(idSourceElement)) {
+											existTarget = true;
+											break;
+										}
+									}
+									
+									if(!existTarget) {
+										adjacencyList.get(idTargetElement).add(idSourceElement);
+									}
+								} else {
+									LinkedList<String> currentList = new LinkedList<String>();
+									currentList.add(idSourceElement);
+									adjacencyList.put(idTargetElement, currentList);
+								}				
+							}
 						}
 					}				
 				}

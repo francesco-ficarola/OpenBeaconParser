@@ -135,9 +135,7 @@ public class RealTimeModule implements GraphRepresentation {
 								edgeAttr.add(source);
 								edgeAttr.add(target);
 								
-								//TODO implementare l'inserimento della potenza
-								int power = 0;
-								
+								int power = 3;
 								lastTimestampObject.getEdges().add(new Edge(edgeAttr, power));
 							}
 						}
@@ -272,66 +270,67 @@ public class RealTimeModule implements GraphRepresentation {
 			 * TOKENS "C" && [xxxx (x)
 			 */
 			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
-				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
+				Integer power = Integer.parseInt(tokens.get(i).replaceAll("\\x5b\\d+|\\x28|\\x29", ""));
 				
-				// Controllo se il tag è già presente nell'oggetto
-				int existing = -1;
-				String idCurrentNode = idTargetNode;
-				for(int k = 0; k < tsObjectList.get(indexObjects-1).getTags().size(); k++) {
-					if(idCurrentNode.equals(tsObjectList.get(indexObjects-1).getTags().get(k).getTagID())) {
-						existing = k;
-						break;
-					}
-				}
-				
-				// Se non esiste, allora lo aggiungo
-				if(existing == -1) {
-					ArrayList<String> readerIDs = new ArrayList<String>();
-					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
-					tsObjectList.get(indexObjects-1).getTags().
-								add(new Tag(idCurrentNode,readerIDs));
-				} else {
-					// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
-					String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
-					int existingReader = -1;
-					for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
-						if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
-							existingReader = z;
+				if(power <= ParsingConstants.MAX_CONTACT_POWER) {
+					idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
+					
+					// Controllo se il tag è già presente nell'oggetto
+					int existing = -1;
+					String idCurrentNode = idTargetNode;
+					for(int k = 0; k < tsObjectList.get(indexObjects-1).getTags().size(); k++) {
+						if(idCurrentNode.equals(tsObjectList.get(indexObjects-1).getTags().get(k).getTagID())) {
+							existing = k;
 							break;
 						}
 					}
 					
-					if(existingReader == -1) {
-						tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
+					// Se non esiste, allora lo aggiungo
+					if(existing == -1) {
+						ArrayList<String> readerIDs = new ArrayList<String>();
+						readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
+						tsObjectList.get(indexObjects-1).getTags().
+									add(new Tag(idCurrentNode,readerIDs));
+					} else {
+						// Se già esiste devo aggiornare solo la lista dei readerIDs se il corrente non è già presente
+						String readerID = tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, "");
+						int existingReader = -1;
+						for(int z = 0; z < tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().size(); z++) {
+							if(readerID.equals(tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().get(z))) {
+								existingReader = z;
+								break;
+							}
+						}
+						
+						if(existingReader == -1) {
+							tsObjectList.get(indexObjects-1).getTags().get(existing).getReaderIDs().add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
+						}
 					}
-				}
-				
-				// Controllo se l'arco è già presente nell'oggetto
-				boolean existingEdge = false;
-				String source = idSourceNode;
-				String target = idTargetNode;
-				for(int k = 0; k < tsObjectList.get(indexObjects-1).getEdges().size(); k++) {
-					if((source.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(0)) &&
-						target.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(1)))
-						||
-						(target.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(0)) &&
-						source.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(1)))) {
-						existingEdge = true;
-						break;
+					
+					// Controllo se l'arco è già presente nell'oggetto
+					boolean existingEdge = false;
+					String source = idSourceNode;
+					String target = idTargetNode;
+					for(int k = 0; k < tsObjectList.get(indexObjects-1).getEdges().size(); k++) {
+						if((source.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(0)) &&
+							target.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(1)))
+							||
+							(target.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(0)) &&
+							source.equals(tsObjectList.get(indexObjects-1).getEdges().get(k).getSourceTarget().get(1)))) {
+							existingEdge = true;
+							break;
+						}
 					}
-				}
-				
-				// Se non esiste, allora lo aggiungo
-				if(!existingEdge) {
-					ArrayList<String> edgeAttr = new ArrayList<String>();
-					edgeAttr.add(idSourceNode);
-					edgeAttr.add(idTargetNode);
 					
-					//TODO implementare l'inserimento della potenza
-					int power = 0;
-					
-					tsObjectList.get(indexObjects-1).getEdges().
-									add(new Edge(edgeAttr, power));
+					// Se non esiste, allora lo aggiungo
+					if(!existingEdge) {
+						ArrayList<String> edgeAttr = new ArrayList<String>();
+						edgeAttr.add(idSourceNode);
+						edgeAttr.add(idTargetNode);
+						
+						tsObjectList.get(indexObjects-1).getEdges().
+										add(new Edge(edgeAttr, power));
+					}
 				}
 			}
 		}
@@ -392,19 +391,20 @@ public class RealTimeModule implements GraphRepresentation {
 			
 			
 			if(tokens.get(ParsingConstants.TYPE_MESSAGE_INDEX).equals("C") && tokens.get(i).matches("\\x5b\\w+.*")) {
-				idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
-				ArrayList<String> readerIDs = new ArrayList<String>();
-				readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
-				tags.add(new Tag(idTargetNode, readerIDs));
-			
-				ArrayList<String> edgeAttr = new ArrayList<String>();
-				edgeAttr.add(idSourceNode);
-				edgeAttr.add(idTargetNode);
+				Integer power = Integer.parseInt(tokens.get(i).replaceAll("\\x5b\\d+|\\x28|\\x29", ""));
 				
-				//TODO implementare l'inserimento della potenza
-				int power = 0;
+				if(power <= ParsingConstants.MAX_CONTACT_POWER) {
+					idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
+					ArrayList<String> readerIDs = new ArrayList<String>();
+					readerIDs.add(tokens.get(ParsingConstants.READER_INDEX).replace(ParsingConstants.READER_PREFIX, ""));
+					tags.add(new Tag(idTargetNode, readerIDs));
 				
-				edges.add(new Edge(edgeAttr, power));
+					ArrayList<String> edgeAttr = new ArrayList<String>();
+					edgeAttr.add(idSourceNode);
+					edgeAttr.add(idTargetNode);
+					
+					edges.add(new Edge(edgeAttr, power));
+				}
 			}
 		}
 		

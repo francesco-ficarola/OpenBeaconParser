@@ -158,31 +158,34 @@ public class GexfModule implements GraphRepresentation {
 					// .* = qualsiasi carattere ripetuto da 0 a n volte
 					// \\x28 = (
 					// \\x29 = )
-					if(tokens.get(i).matches("\\x5b\\d+.*")) {					
-						List<Node> listNodes = xmlGraph.getGraph().getNodes();
-						List<Edge> listEdges = xmlGraph.getGraph().getAllEdges();
-						idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\d+\\x29", "");
-						Integer indexSearchedNode = searchIndexNode(listNodes, idTargetNode);
-						
-						// Se non esiste un nodo con id  uguale a
-						// idTargetNode allora provvedo a crearlo.
-						if(indexSearchedNode.equals(-1)) {
-							targetNode = xmlGraph.getGraph().createNode(idTargetNode);
-							targetNode.setLabel(idTargetNode);
-						} else {
-							// Se esiste già un nodo con id uguale a idTargetNode allora
-							// lo recupero per permettere la creazione dell'arco più avanti.
-							targetNode = xmlGraph.getGraph().getNodes().get(indexSearchedNode.intValue());
-						}
-						
-						// Creazione arco tra sourceNode e targetNode
-						if(!sourceNode.hasEdgeTo(idTargetNode) && !targetNode.hasEdgeTo(idSourceNode)) {
-							sourceNode.connectTo(String.valueOf(indexEdges), targetNode).setWeight(1);
-							indexEdges++;
-						} else {
-							Integer indexExistEdge = searchIndexEdge(listEdges, sourceNode, targetNode);
-							if(!indexExistEdge.equals(-1)) {
-								setWeightExistingEdges(indexExistEdge);
+					if(tokens.get(i).matches("\\x5b\\d+.*")) {
+						Integer power = Integer.parseInt(tokens.get(i).replaceAll("\\x5b\\d+|\\x28|\\x29", ""));
+						if(power <= ParsingConstants.MAX_CONTACT_POWER) {
+							List<Node> listNodes = xmlGraph.getGraph().getNodes();
+							List<Edge> listEdges = xmlGraph.getGraph().getAllEdges();
+							idTargetNode = tokens.get(i).replaceAll("\\x5b|\\x28\\d+\\x29", "");
+							Integer indexSearchedNode = searchIndexNode(listNodes, idTargetNode);
+							
+							// Se non esiste un nodo con id  uguale a
+							// idTargetNode allora provvedo a crearlo.
+							if(indexSearchedNode.equals(-1)) {
+								targetNode = xmlGraph.getGraph().createNode(idTargetNode);
+								targetNode.setLabel(idTargetNode);
+							} else {
+								// Se esiste già un nodo con id uguale a idTargetNode allora
+								// lo recupero per permettere la creazione dell'arco più avanti.
+								targetNode = xmlGraph.getGraph().getNodes().get(indexSearchedNode.intValue());
+							}
+							
+							// Creazione arco tra sourceNode e targetNode
+							if(!sourceNode.hasEdgeTo(idTargetNode) && !targetNode.hasEdgeTo(idSourceNode)) {
+								sourceNode.connectTo(String.valueOf(indexEdges), targetNode).setWeight(1);
+								indexEdges++;
+							} else {
+								Integer indexExistEdge = searchIndexEdge(listEdges, sourceNode, targetNode);
+								if(!indexExistEdge.equals(-1)) {
+									setWeightExistingEdges(indexExistEdge);
+								}
 							}
 						}
 					}

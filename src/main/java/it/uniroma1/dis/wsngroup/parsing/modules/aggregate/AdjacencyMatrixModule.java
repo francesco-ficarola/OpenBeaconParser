@@ -151,206 +151,209 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 					// \\x28 = (
 					// \\x29 = )
 					if(tokens.get(i).matches("\\x5b\\w+.*")) {
+						Integer power = Integer.parseInt(tokens.get(i).replaceAll("\\x5b\\d+|\\x28|\\x29", ""));
 						
-						idTargetElement = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
-						
-						/*
-						 * 1-timestamp edges
-						 */
-						if(LogParser.buildingEdgeMode == ParsingConstants.DEFAULT_EDGE_MODE) {
-							contactNumber++;
+						if(power <= ParsingConstants.MAX_CONTACT_POWER) {
+							idTargetElement = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 							
-							if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
-								adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
-								adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
-							} else {
-								int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
-								curWeight++;
-								adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
-								adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
-							}
-						}
-						
-						else
-							
-						/*
-						 * X-timestamp interval edges
-						 */
-							
-						if(LogParser.buildingEdgeMode == ParsingConstants.INTERVAL_EDGE_MODE) {
-							Integer numOfNeededMsgForInterval = Math.round((float)(LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg) / 100);
-														
-							ArrayList<String> edge = new ArrayList<String>();
-							edge.add(idSourceElement);
-							edge.add(idTargetElement);
-							
-							ArrayList<String> edgeInv = new ArrayList<String>();
-							edgeInv.add(idTargetElement);
-							edgeInv.add(idSourceElement);
+							/*
+							 * 1-timestamp edges
+							 */
+							if(LogParser.buildingEdgeMode == ParsingConstants.DEFAULT_EDGE_MODE) {
+								contactNumber++;
 								
-							// Se e' presente una chiave con l'arco <source, target> o <target, source>
-							if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
-								
-								// Memorizzo in un array temporaneo informazioni riguardanti il TS ed il contatore presenti
-								// currentInformationTime.get(0) = timestamp
-								// currentInformationTime.get(1) = counter
-								ArrayList<Integer> currentInformationTime = aggregationOfEdge.get(edge);
-								ArrayList<Integer> currentInformationTimeInv = aggregationOfEdge.get(edgeInv);
-								Integer curTagTS = currentInformationTime.get(0);
-								Integer curCounter = currentInformationTime.get(1);
-								
-								/** 
-								 * SEZIONE AGGIORNAMENTO ARCHI:
-								 * Creazione archi nella matrice d'adiacenza se i contatti avuti nei 
-								 * TS precedenti soddisfano i requisiti di numOfNeededMsgForInterval.
-								 */
-								
-								// Se il timestamp del nodo e' un multiplo dell'intervallo scelto
-								// o se l'arco non e' comparso in un timestamp multiplo dell'intervallo scelto
-								// ed ha un timestamp antecedente rispetto all'intervallo attuale,
-								// allora ai successivi timestamp creo il contatto per la matrice.
-								// Es. 1 - Se numberOfIntervalTS = 3 e currentTS = 6, allora: 6 % 3 = 0
-								// Es. 2 - Se numberOfIntervalTS = 3, currentTS = 7 e curTagTS = 4, allora:
-								// 4 < 7 - (7 % 3) ==> 4 < 7 - 1 ==> 4 < 6
-								if((currentTS % LogParser.numberOfIntervalTS == 0)
-										|| (curTagTS < currentTS - (currentTS % LogParser.numberOfIntervalTS))) {
-									
-									logger.debug("UNLOADING - currentTS: " + currentTS);
-									logger.debug("EDGES: " + edge.toString() + " or " + edgeInv.toString());
-									
-									if(curCounter >= numOfNeededMsgForInterval) {
-										
-										contactNumber++;
-										
-										if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
-											adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
-											adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
-										} else {
-											int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
-											curWeight++;
-											adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
-											adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
-										}
-									}
+								if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
+									adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
+									adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
+								} else {
+									int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
+									curWeight++;
+									adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
+									adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
 								}
-								
-								
-								/** SEZIONE AGGIORNAMENTO CONTATTI */
-								
-								// Se il timestamp memorizzato nei tag e' compreso nell'intervallo
-								// [last timestamp multiple of numberOfIntervalTS, current timestamp)
-								if(curTagTS >= (currentTS - (currentTS % LogParser.numberOfIntervalTS)) && curTagTS < currentTS) {
-									
-									// Incremento i contatori per il contatto corrente
-									curCounter++;
-									currentInformationTime.set(1, curCounter);
-									currentInformationTimeInv.set(1, curCounter);
-								}
-								
-								else
-								
-								// Se il timestamp memorizzato nei tag e' piu' antecedente dell'ultimo valore
-								// multiplo di numberOfIntervalTS, oppure e' uguale al timestamp corrente, 
-								// allora setto i contatori a 1 (nuovo arco)
-								if(curTagTS < (currentTS - (currentTS % LogParser.numberOfIntervalTS)) || curTagTS.equals(currentTS)) {
-									currentInformationTime.set(1, 1);
-									currentInformationTimeInv.set(1, 1);
-								}
-								
-								// Aggiorno il timestamp degli array con quello corrente
-								currentInformationTime.set(0, currentTS);
-								currentInformationTimeInv.set(0, currentTS);
 							}
 							
-							// Se non e' presente una chiave con l'arco <source, target> o <target, source>
-							else {
-								ArrayList<Integer> informationTime = new ArrayList<Integer>();
-								informationTime.add(currentTS);
-								informationTime.add(1);
-								aggregationOfEdge.put(edge, informationTime);
-								aggregationOfEdge.put(edgeInv, informationTime);
-							}
-						}
-						
-						else
-							
-						/*
-						 * X-continuous-timestamp edges
-						 */
-						
-						if(LogParser.buildingEdgeMode == ParsingConstants.CONTINUOUS_EDGE_MODE) {
-							
-							ArrayList<String> edge = new ArrayList<String>();
-							edge.add(idSourceElement);
-							edge.add(idTargetElement);
-							
-							ArrayList<String> edgeInv = new ArrayList<String>();
-							edgeInv.add(idTargetElement);
-							edgeInv.add(idSourceElement);
-							
-							// Se e' presente una chiave con l'arco <source, target> o <target, source>
-							if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
+							else
 								
-								// Memorizzo in array temporanei informazioni riguardanti il TS ed il contatore presenti
-								// currentInformationTime.get(0) = timestamp
-								// currentInformationTime.get(1) = counter
-								ArrayList<Integer> currentInformationTime = aggregationOfEdge.get(edge);
-								ArrayList<Integer> currentInformationTimeInv = aggregationOfEdge.get(edgeInv);
-								Integer curTagTS = currentInformationTime.get(0);
+							/*
+							 * X-timestamp interval edges
+							 */
 								
-								// Se il timestamp corrente e' continuo rispetto a quello precedente presente negli array
-								if(currentTS == curTagTS + 1) {
+							if(LogParser.buildingEdgeMode == ParsingConstants.INTERVAL_EDGE_MODE) {
+								Integer numOfNeededMsgForInterval = Math.round((float)(LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg) / 100);
+															
+								ArrayList<String> edge = new ArrayList<String>();
+								edge.add(idSourceElement);
+								edge.add(idTargetElement);
+								
+								ArrayList<String> edgeInv = new ArrayList<String>();
+								edgeInv.add(idTargetElement);
+								edgeInv.add(idSourceElement);
 									
-									// Incremento il contatore degli array
+								// Se e' presente una chiave con l'arco <source, target> o <target, source>
+								if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
+									
+									// Memorizzo in un array temporaneo informazioni riguardanti il TS ed il contatore presenti
+									// currentInformationTime.get(0) = timestamp
+									// currentInformationTime.get(1) = counter
+									ArrayList<Integer> currentInformationTime = aggregationOfEdge.get(edge);
+									ArrayList<Integer> currentInformationTimeInv = aggregationOfEdge.get(edgeInv);
+									Integer curTagTS = currentInformationTime.get(0);
 									Integer curCounter = currentInformationTime.get(1);
-									curCounter++;
-									currentInformationTime.set(1, curCounter);
-									currentInformationTimeInv.set(1, curCounter);
 									
-									// Se c'e' stato un contatto continuo per X timestamps
-									if(curCounter == LogParser.numberOfContinuousTS) {								
-										contactNumber++;
+									/** 
+									 * SEZIONE AGGIORNAMENTO ARCHI:
+									 * Creazione archi nella matrice d'adiacenza se i contatti avuti nei 
+									 * TS precedenti soddisfano i requisiti di numOfNeededMsgForInterval.
+									 */
+									
+									// Se il timestamp del nodo e' un multiplo dell'intervallo scelto
+									// o se l'arco non e' comparso in un timestamp multiplo dell'intervallo scelto
+									// ed ha un timestamp antecedente rispetto all'intervallo attuale,
+									// allora ai successivi timestamp creo il contatto per la matrice.
+									// Es. 1 - Se numberOfIntervalTS = 3 e currentTS = 6, allora: 6 % 3 = 0
+									// Es. 2 - Se numberOfIntervalTS = 3, currentTS = 7 e curTagTS = 4, allora:
+									// 4 < 7 - (7 % 3) ==> 4 < 7 - 1 ==> 4 < 6
+									if((currentTS % LogParser.numberOfIntervalTS == 0)
+											|| (curTagTS < currentTS - (currentTS % LogParser.numberOfIntervalTS))) {
 										
-										// Creo gli archi nella matrice di adiacenza se non presenti...
-										if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
-											adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
-											adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
-										} else {
-											// ... altrimenti aggiorno i pesi
-											int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
-											curWeight++;
-											adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
-											adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
+										logger.debug("UNLOADING - currentTS: " + currentTS);
+										logger.debug("EDGES: " + edge.toString() + " or " + edgeInv.toString());
+										
+										if(curCounter >= numOfNeededMsgForInterval) {
+											
+											contactNumber++;
+											
+											if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
+												adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
+												adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
+											} else {
+												int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
+												curWeight++;
+												adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
+												adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
+											}
 										}
-										
-										// Azzero i contatori degli array
-										currentInformationTime.set(1, 0);
-										currentInformationTimeInv.set(1, 0);
 									}
-								}
-								
-								else
-								
-								// Se il timestamp corrente non e' continuo rispetto a quello precedente
-								if (currentTS > curTagTS + 1) {
 									
-									// Setto a 1 i contatori degli array (nuovo arco)
-									currentInformationTime.set(1, 1);
-									currentInformationTimeInv.set(1, 1);
+									
+									/** SEZIONE AGGIORNAMENTO CONTATTI */
+									
+									// Se il timestamp memorizzato nei tag e' compreso nell'intervallo
+									// [last timestamp multiple of numberOfIntervalTS, current timestamp)
+									if(curTagTS >= (currentTS - (currentTS % LogParser.numberOfIntervalTS)) && curTagTS < currentTS) {
+										
+										// Incremento i contatori per il contatto corrente
+										curCounter++;
+										currentInformationTime.set(1, curCounter);
+										currentInformationTimeInv.set(1, curCounter);
+									}
+									
+									else
+									
+									// Se il timestamp memorizzato nei tag e' piu' antecedente dell'ultimo valore
+									// multiplo di numberOfIntervalTS, oppure e' uguale al timestamp corrente, 
+									// allora setto i contatori a 1 (nuovo arco)
+									if(curTagTS < (currentTS - (currentTS % LogParser.numberOfIntervalTS)) || curTagTS.equals(currentTS)) {
+										currentInformationTime.set(1, 1);
+										currentInformationTimeInv.set(1, 1);
+									}
+									
+									// Aggiorno il timestamp degli array con quello corrente
+									currentInformationTime.set(0, currentTS);
+									currentInformationTimeInv.set(0, currentTS);
 								}
 								
-								// Aggiorno il timestamp degli array con quello corrente
-								currentInformationTime.set(0, currentTS);
-								currentInformationTimeInv.set(0, currentTS);
+								// Se non e' presente una chiave con l'arco <source, target> o <target, source>
+								else {
+									ArrayList<Integer> informationTime = new ArrayList<Integer>();
+									informationTime.add(currentTS);
+									informationTime.add(1);
+									aggregationOfEdge.put(edge, informationTime);
+									aggregationOfEdge.put(edgeInv, informationTime);
+								}
 							}
 							
-							// Se non e' presente una chiave con l'arco <source, target> o <target, source>
-							else {
-								ArrayList<Integer> informationTime = new ArrayList<Integer>();
-								informationTime.add(currentTS);
-								informationTime.add(1);
-								aggregationOfEdge.put(edge, informationTime);
-								aggregationOfEdge.put(edgeInv, informationTime);
+							else
+								
+							/*
+							 * X-continuous-timestamp edges
+							 */
+							
+							if(LogParser.buildingEdgeMode == ParsingConstants.CONTINUOUS_EDGE_MODE) {
+								
+								ArrayList<String> edge = new ArrayList<String>();
+								edge.add(idSourceElement);
+								edge.add(idTargetElement);
+								
+								ArrayList<String> edgeInv = new ArrayList<String>();
+								edgeInv.add(idTargetElement);
+								edgeInv.add(idSourceElement);
+								
+								// Se e' presente una chiave con l'arco <source, target> o <target, source>
+								if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
+									
+									// Memorizzo in array temporanei informazioni riguardanti il TS ed il contatore presenti
+									// currentInformationTime.get(0) = timestamp
+									// currentInformationTime.get(1) = counter
+									ArrayList<Integer> currentInformationTime = aggregationOfEdge.get(edge);
+									ArrayList<Integer> currentInformationTimeInv = aggregationOfEdge.get(edgeInv);
+									Integer curTagTS = currentInformationTime.get(0);
+									
+									// Se il timestamp corrente e' continuo rispetto a quello precedente presente negli array
+									if(currentTS == curTagTS + 1) {
+										
+										// Incremento il contatore degli array
+										Integer curCounter = currentInformationTime.get(1);
+										curCounter++;
+										currentInformationTime.set(1, curCounter);
+										currentInformationTimeInv.set(1, curCounter);
+										
+										// Se c'e' stato un contatto continuo per X timestamps
+										if(curCounter == LogParser.numberOfContinuousTS) {								
+											contactNumber++;
+											
+											// Creo gli archi nella matrice di adiacenza se non presenti...
+											if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
+												adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
+												adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
+											} else {
+												// ... altrimenti aggiorno i pesi
+												int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
+												curWeight++;
+												adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
+												adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
+											}
+											
+											// Azzero i contatori degli array
+											currentInformationTime.set(1, 0);
+											currentInformationTimeInv.set(1, 0);
+										}
+									}
+									
+									else
+									
+									// Se il timestamp corrente non e' continuo rispetto a quello precedente
+									if (currentTS > curTagTS + 1) {
+										
+										// Setto a 1 i contatori degli array (nuovo arco)
+										currentInformationTime.set(1, 1);
+										currentInformationTimeInv.set(1, 1);
+									}
+									
+									// Aggiorno il timestamp degli array con quello corrente
+									currentInformationTime.set(0, currentTS);
+									currentInformationTimeInv.set(0, currentTS);
+								}
+								
+								// Se non e' presente una chiave con l'arco <source, target> o <target, source>
+								else {
+									ArrayList<Integer> informationTime = new ArrayList<Integer>();
+									informationTime.add(currentTS);
+									informationTime.add(1);
+									aggregationOfEdge.put(edge, informationTime);
+									aggregationOfEdge.put(edgeInv, informationTime);
+								}
 							}
 						}
 					}
