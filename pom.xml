@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>OpenBeaconParser</groupId>
   <artifactId>OpenBeaconParser</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>OpenBeaconParser</name>
   <repositories>
     <repository>
@@ -105,6 +105,12 @@
   		<artifactId>javaml</artifactId>
   		<version>0.1.5</version>
   	</dependency>
+  	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.26</version>
+	</dependency>
+            
   </dependencies>
   <url>https://github.com/francesco-ficarola/OpenBeaconParser</url>
 </project>

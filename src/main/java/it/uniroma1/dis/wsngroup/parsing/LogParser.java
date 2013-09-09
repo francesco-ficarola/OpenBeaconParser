@@ -15,6 +15,9 @@ import it.uniroma1.dis.wsngroup.parsing.modules.macro.DynamicNetworkModuleMacro;
 import it.uniroma1.dis.wsngroup.parsing.modules.macro.GexfModuleAggregateMacro;
 import it.uniroma1.dis.wsngroup.parsing.modules.macro.JsonModuleMacro;
 import it.uniroma1.dis.wsngroup.parsing.modules.macro.NetLogoModuleMacro;
+import it.uniroma1.dis.wsngroup.parsing.modules.statistics.StatsModule;
+import it.uniroma1.dis.wsngroup.parsing.modules.statistics.StatsModuleDIS;
+import it.uniroma1.dis.wsngroup.parsing.modules.statistics.StatsModuleMacro;
 import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 
 import java.io.BufferedReader;
@@ -292,6 +295,50 @@ public class LogParser {
 			logger.info("DNF Representation initialized.");
 		}
 		
+		else
+			
+		if(representationType == ParsingConstants.STATISTICS) {
+			
+			try {
+				System.out.print("Would you like to create virtual links? [y/N] ");
+				BufferedReader answerVL = new BufferedReader(new InputStreamReader(System.in));
+				String answerVlString = answerVL.readLine();
+				
+				boolean vl = false;
+				if(answerVlString.equalsIgnoreCase("y") || answerVlString.equalsIgnoreCase("yes")) {
+					vl = ParsingConstants.CREATE_VIRTUAL_LINKS;
+				}
+				
+				System.out.println("\nWhat database would you like to use?");
+				System.out.println("0. No one");
+				System.out.println("1. SocialDIS");
+				System.out.println("2. MACRO");
+				System.out.print("Please choose 0, 1 or 2: ");
+				BufferedReader answerDB = new BufferedReader(new InputStreamReader(System.in));
+				
+				String choise = answerDB.readLine();
+				while(!choise.equals("0") && !choise.equals("1") && !choise.equals("2")) {
+					System.out.print("Please choose 0, 1 or 2: ");
+					choise = answerDB.readLine();
+				}
+				
+				if(choise.equals("0")) {
+					graph = new StatsModule(fileInput, fis, vl);
+				} else
+				if(choise.equals("1")) {
+					graph = new StatsModuleDIS(fileInput, fis, vl);
+				} else
+				if(choise.equals("2")) {
+					graph = new StatsModuleMacro(fileInput, fis, vl);
+				}
+				
+			} catch (IOException e) {
+				logger.error("Wrong input.");
+				//e.printStackTrace();
+			}
+			logger.info("Statistics initialized.");
+		}
+		
 		// Total file name
 		listGraphOut = listGraphOut + fileType;
 		
@@ -315,6 +362,7 @@ public class LogParser {
 		boolean am = false;
 		boolean net = false;
 		boolean dnf = false;
+		boolean stats = false;
 		
 		if(args.length > 0) {
 			for(int i = 0; i < args.length; i++) {
@@ -358,7 +406,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-csv") || args[i].equals("--csv-format")) {
-					if(!gexf && !json && !net && !dnf) {
+					if(!gexf && !json && !net && !dnf && !stats) {
 						csv = true;
 						separator = ParsingConstants.SEMICOLON_SEPARATOR;
 						fileType = ParsingConstants.CSV_FILE_TYPE;
@@ -371,7 +419,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-am") || args[i].equals("--adjacency-matrix")) {
-					if(!gexf && !json && !net && !dnf) {
+					if(!gexf && !json && !net && !dnf && !stats) {
 						am = true;
 						representationType = ParsingConstants.ADJACENCY_MATRIX_REPRESENTATION;
 					} else {
@@ -383,7 +431,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-gexf") || args[i].equals("--gexf")) {
-					if(!csv && !am && !json && !net && !dnf) {
+					if(!csv && !am && !json && !net && !dnf && !stats) {
 						gexf = true;
 						separator = ParsingConstants.EMPTY_SEPARATOR;
 						representationType = ParsingConstants.GEXF_REPRESENTATION;
@@ -397,7 +445,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-json") || args[i].equals("--json")) {
-					if(!csv && !am && !gexf && !net && !dnf) {
+					if(!csv && !am && !gexf && !net && !dnf && !stats) {
 						json = true;
 						separator = ParsingConstants.EMPTY_SEPARATOR;
 						representationType = ParsingConstants.JSON_REPRESENTATION;
@@ -411,7 +459,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-net") || args[i].equals("--netlogo")) {
-					if(!csv && !am && !json && !gexf && !dnf) {
+					if(!csv && !am && !json && !gexf && !dnf && !stats) {
 						net = true;
 						separator = ParsingConstants.EMPTY_SEPARATOR;
 						representationType = ParsingConstants.NETLOGO_REPRESENTATION;
@@ -425,7 +473,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-dnf") || args[i].equals("--dynamic-network-format")) {
-					if(!csv && !am && !json && !gexf && !net) {
+					if(!csv && !am && !json && !gexf && !net && !stats) {
 						dnf = true;
 						separator = ParsingConstants.EMPTY_SEPARATOR;
 						representationType = ParsingConstants.DNF_REPRESENTATION;
@@ -439,7 +487,7 @@ public class LogParser {
 				else
 					
 				if(args[i].equals("-pp") || args[i].equals("--pretty-printing")) {
-					if(!csv && !am && !gexf && !net && !dnf) {
+					if(!csv && !am && !gexf && !net && !dnf && !stats) {
 						LogParser.prettyJSON = true;
 					} else {
 						usage();
@@ -488,6 +536,18 @@ public class LogParser {
 							System.out.println("\nERROR:\nThe number of the timestamp interval must be greater than 1.\nThe percentage must be in the range [1,100].\n");
 							System.exit(0);
 						}
+					} else {
+						usage();
+						System.exit(0);
+					}
+				}
+				
+				else
+					
+				if(args[i].equals("-stats") || args[i].equals("--statistics")) {
+					if(!csv && !am && !gexf && !net && !dnf & !json) {
+						stats = true;
+						representationType = ParsingConstants.STATISTICS;
 					} else {
 						usage();
 						System.exit(0);
@@ -549,6 +609,7 @@ public class LogParser {
 		System.out.println("-et <INTVALUE> or --end-timestamp <INTVALUE>: The final timestamp.");
 		System.out.println("-pp or --pretty-printing: use this option with -json option if you'd like to enable the JSON pretty printing.");
 		System.out.println("-ct <INTVALUE> or --continuous-timestamps <INTVALUE>: specify the number of continuous timestamps to build an edge.");
-		System.out.println("-it <INTVALUE> <INTVALUE> or --interval-timestamps <INTVALUE> <INTVALUE>: specify the timestamp interval and the percentage of messages to build an edge.\n");
+		System.out.println("-it <INTVALUE> <INTVALUE> or --interval-timestamps <INTVALUE> <INTVALUE>: specify the timestamp interval and the percentage of messages to build an edge.");
+		System.out.println("-stats or --statistics: print some stats.\n");
 	}	
 }

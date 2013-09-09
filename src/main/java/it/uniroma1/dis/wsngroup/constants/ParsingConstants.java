@@ -26,6 +26,7 @@ public class ParsingConstants {
 	public static final int JSON_REPRESENTATION = 4;
 	public static final int NETLOGO_REPRESENTATION = 5;
 	public static final int DNF_REPRESENTATION = 6;
+	public static final int STATISTICS = 7;
 	public static final String TAB_SEPARATOR = "\t";
 	public static final String SEMICOLON_SEPARATOR = ";";
 	public static final String COMMA_SEPARATOR = ",";

@@ -604,7 +604,7 @@ public abstract class AbstractModule implements GraphRepresentation {
 	/*
 	 * INNER CLASS
 	 */
-	protected class TimestampObject {
+	public class TimestampObject {
 		private int id;
 		private String timestamp;
 		private ArrayList<Tag> tags;
@@ -662,7 +662,7 @@ public abstract class AbstractModule implements GraphRepresentation {
 	}
 	
 	
-	protected class Tag implements Comparable<Tag> {
+	public class Tag implements Comparable<Tag> {
 		private String tagID;
 		private ArrayList<String> readerIDs;
 		
@@ -695,7 +695,7 @@ public abstract class AbstractModule implements GraphRepresentation {
 	}
 	
 	
-	private class Seq {
+	public class Seq {
 		private String seqNumber;
 		private String tagID;
 		
@@ -714,7 +714,7 @@ public abstract class AbstractModule implements GraphRepresentation {
 	}
 	
 	
-	protected class Reader {
+	public class Reader {
 		private String readerID;
 		
 		public Reader(String readerID) {
@@ -727,7 +727,7 @@ public abstract class AbstractModule implements GraphRepresentation {
 	}
 	
 	
-	protected class Edge {
+	public class Edge {
 		private ArrayList<String> source_target;
 		private int power;
 		

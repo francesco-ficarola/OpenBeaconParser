@@ -290,18 +290,21 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								edgeInv.add(idTargetElement);
 								edgeInv.add(idSourceElement);
 								
+								logger.debug(currentTS + ": " + idSourceElement + "," + idTargetElement);
+								
 								// Se e' presente una chiave con l'arco <source, target> o <target, source>
 								if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
 									
 									// Memorizzo in array temporanei informazioni riguardanti il TS ed il contatore presenti
-									// currentInformationTime.get(0) = timestamp
-									// currentInformationTime.get(1) = counter
+									// currentInformationTime.get(0) : timestamp
+									// currentInformationTime.get(1) : counter
 									ArrayList<Integer> currentInformationTime = aggregationOfEdge.get(edge);
 									ArrayList<Integer> currentInformationTimeInv = aggregationOfEdge.get(edgeInv);
 									Integer curTagTS = currentInformationTime.get(0);
+									Integer curTagTSInv = currentInformationTimeInv.get(0);
 									
 									// Se il timestamp corrente e' continuo rispetto a quello precedente presente negli array
-									if(currentTS == curTagTS + 1) {
+									if((currentTS == curTagTS + 1) || (currentTS == curTagTSInv + 1)) {
 										
 										// Incremento il contatore degli array
 										Integer curCounter = currentInformationTime.get(1);
@@ -312,9 +315,9 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 										// Se c'e' stato un contatto continuo per X timestamps
 										if(curCounter == LogParser.numberOfContinuousTS) {								
 											contactNumber++;
-											
+																						
 											// Creo gli archi nella matrice di adiacenza se non presenti...
-											if(!adjacencyMatrix.contains(idSourceElement, idTargetElement)) {
+											if(!adjacencyMatrix.contains(idSourceElement, idTargetElement) && !adjacencyMatrix.contains(idTargetElement, idSourceElement)) {
 												adjacencyMatrix.put(idSourceElement, idTargetElement, "1");
 												adjacencyMatrix.put(idTargetElement, idSourceElement, "1"); //Perpendicular
 											} else {
@@ -328,6 +331,8 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 											// Azzero i contatori degli array
 											currentInformationTime.set(1, 0);
 											currentInformationTimeInv.set(1, 0);
+											
+											logger.debug(currentTS + ": " + idSourceElement + "," + idTargetElement);
 										}
 									}
 									
