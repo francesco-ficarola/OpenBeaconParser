@@ -44,4 +44,5 @@ public class ParsingConstants {
 	public static final int DEFAULT_EDGE_MODE = 1;
 	public static final int CONTINUOUS_EDGE_MODE = 2;
 	public static final int INTERVAL_EDGE_MODE = 3;
+	public static final Integer EFFECTIVE_EDGE_MODE = 4;
 }

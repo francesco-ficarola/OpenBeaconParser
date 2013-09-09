@@ -52,6 +52,8 @@ public class LogParser {
 	public static Integer numberOfContinuousTS;
 	public static Integer numberOfIntervalTS;
 	public static Integer percOfDeliveredMsg;
+	public static Integer numberOfMinTS;
+	public static Integer numberOfExpiringTS;
 	
 	public LogParser() {
 		fileInput = null;
@@ -500,7 +502,7 @@ public class LogParser {
 				if(args[i].equals("-ct") || args[i].equals("--continuous-timestamps")) {
 					
 					if(LogParser.buildingEdgeMode != ParsingConstants.DEFAULT_EDGE_MODE) {
-						System.out.println("\nERROR:\nThe -ct or --continuous-timestamps option is incompatible with the \"interval timestamps\" mode!\n");
+						System.out.println("\nERROR:\nThe -ct or --continuous-timestamps option is incompatible with other modes!\n");
 						System.exit(0);
 					}
 					
@@ -523,7 +525,7 @@ public class LogParser {
 				if(args[i].equals("-it") || args[i].equals("--interval-timestamps")) {
 					
 					if(LogParser.buildingEdgeMode != ParsingConstants.DEFAULT_EDGE_MODE) {
-						System.out.println("\nERROR:\nThe -it or --interval-timestamps option is incompatible with the \"continuous timestamps\" mode.\n");
+						System.out.println("\nERROR:\nThe -it or --interval-timestamps option is incompatible with other modes.\n");
 						System.exit(0);
 					}
 					
@@ -534,6 +536,30 @@ public class LogParser {
 							LogParser.buildingEdgeMode = ParsingConstants.INTERVAL_EDGE_MODE;
 						} else {
 							System.out.println("\nERROR:\nThe number of the timestamp interval must be greater than 1.\nThe percentage must be in the range [1,100].\n");
+							System.exit(0);
+						}
+					} else {
+						usage();
+						System.exit(0);
+					}
+				}
+				
+				else
+					
+				if(args[i].equals("-eff") || args[i].equals("--effective-timestamps")) {
+					
+					if(LogParser.buildingEdgeMode != ParsingConstants.DEFAULT_EDGE_MODE) {
+						System.out.println("\nERROR:\nThe -eff or --effective-timestamps option is incompatible with other modes.\n");
+						System.exit(0);
+					}
+					
+					if(args.length > i+2 && args[i+1].matches("\\d+") && args[i+2].matches("\\d+")) {					
+						LogParser.numberOfMinTS = Integer.parseInt(args[i+1]);
+						LogParser.numberOfExpiringTS = Integer.parseInt(args[i+2]);
+						if(LogParser.numberOfMinTS > 1 && LogParser.numberOfExpiringTS > 1) {
+							LogParser.buildingEdgeMode = ParsingConstants.EFFECTIVE_EDGE_MODE;
+						} else {
+							System.out.println("\nERROR:\nThe number of the minimum contact timestamps must be greater than 1.\nThe expiration duration must be greater than 1.\n");
 							System.exit(0);
 						}
 					} else {
@@ -610,6 +636,7 @@ public class LogParser {
 		System.out.println("-pp or --pretty-printing: use this option with -json option if you'd like to enable the JSON pretty printing.");
 		System.out.println("-ct <INTVALUE> or --continuous-timestamps <INTVALUE>: specify the number of continuous timestamps to build an edge.");
 		System.out.println("-it <INTVALUE> <INTVALUE> or --interval-timestamps <INTVALUE> <INTVALUE>: specify the timestamp interval and the percentage of messages to build an edge.");
+		System.out.println("-eff <INTVALUE> <INTVALUE> or --effective-timestamps <INTVALUE> <INTVALUE>: specify the minimum contact duration and the expiration to build an edge.");
 		System.out.println("-stats or --statistics: print some stats.\n");
 	}	
 }
