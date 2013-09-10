@@ -290,7 +290,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								edgeInv.add(idTargetElement);
 								edgeInv.add(idSourceElement);
 								
-								logger.debug(currentTS + ": " + idSourceElement + "," + idTargetElement);
+								logger.debug(currentTS + ": [" + idSourceElement + "," + idTargetElement + "]");
 								
 								// Se e' presente una chiave con l'arco <source, target> o <target, source>
 								if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
@@ -376,7 +376,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 								edgeInv.add(idTargetElement);
 								edgeInv.add(idSourceElement);
 								
-								logger.debug(currentTS + ": " + idSourceElement + "," + idTargetElement);
+								logger.debug(currentTS + ": [" + idSourceElement + "," + idTargetElement + "]");
 								
 								// Se e' presente una chiave con l'arco <source, target> o <target, source>
 								if(aggregationOfEdge.containsKey(edge) && aggregationOfEdge.containsKey(edgeInv)) {
@@ -392,10 +392,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 									// Se la differenza tra il TS corrente e quello memorizzato nell'arco e' minore
 									// di una certa soglia, allora aggiorno il contatore dei pesi dell'arco.
 									// Caso in cui il contatto continua ad esserci...
-									if((currentTS - curEdgeTS) <= LogParser.numberOfExpiringTS) {
+									if((currentTS - curEdgeTS) <= LogParser.numberOfExpiringTS && !currentTS.equals(curEdgeTS)) {
 										Integer updatedEdgeCounter = curEdgeCounter + (currentTS - curEdgeTS);
 										currentInformationTime.set(1, updatedEdgeCounter);
 										currentInformationTimeInv.set(1, updatedEdgeCounter);
+										logger.debug("[CONTINUE] " + currentTS + " (" + curEdgeTS +"): [" + idSourceElement + "," + idTargetElement + "] (" + curEdgeCounter + " --> " + updatedEdgeCounter + ")");
 									}
 									
 									// ... altrimenti, se maggiore, controllo se il contatore presente nell'arco
@@ -405,8 +406,9 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 										currentInformationTime.set(1, 1);
 										currentInformationTimeInv.set(1, 1);
 										
-										if(curEdgeCounter >= LogParser.numberOfMinTS) {
+										if(curEdgeCounter >= LogParser.numberOfMinTSforContact) {
 											contactNumber += curEdgeCounter;
+											logger.debug("Contact Number: " + contactNumber);
 											
 											// Creo gli archi nella matrice di adiacenza se non presenti...
 											if(!adjacencyMatrix.contains(idSourceElement, idTargetElement) && !adjacencyMatrix.contains(idTargetElement, idSourceElement)) {
@@ -419,6 +421,8 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 												adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
 												adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
 											}
+											
+											logger.debug("[UPDATE] " + currentTS + " (" + curEdgeTS +"): [" + idSourceElement + "," + idTargetElement + "] (" + curEdgeCounter + " --> 1" + ")");
 										}
 									}
 									
@@ -434,6 +438,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 									informationTime.add(1);
 									aggregationOfEdge.put(edge, informationTime);
 									aggregationOfEdge.put(edgeInv, informationTime);
+									logger.debug("[NEW] " + currentTS +": [" + idSourceElement + "," + idTargetElement + "]");
 								}
 							}
 						}
@@ -443,7 +448,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		}
 	}
 	
-	private void updateHangingFinalContacts() {
+	private void updateHangingFinalContactsInterval() {
 		Integer numOfNeededMsgForInterval = Math.round((float)(LogParser.numberOfIntervalTS * LogParser.percOfDeliveredMsg) / 100);
 		ArrayList<ArrayList<String>> contactsListAlreadyProcessed = new ArrayList<ArrayList<String>>();
 		
@@ -495,7 +500,58 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 				contactsListAlreadyProcessed.add(alreadyContactInv);
 			}
 		}
-	}	
+	}
+	
+	private void updateHangingFinalContactsEffective() {
+		ArrayList<ArrayList<String>> contactsListAlreadyProcessed = new ArrayList<ArrayList<String>>();
+		Set<Map.Entry<ArrayList<String>, ArrayList<Integer>>> setContacts = aggregationOfEdge.entrySet();
+		Iterator<Entry<ArrayList<String>, ArrayList<Integer>>> itContacts = setContacts.iterator();
+		while(itContacts.hasNext()) {
+			boolean contactAlreadyProcessed = false;
+			Entry<ArrayList<String>, ArrayList<Integer>> entry = itContacts.next();
+			ArrayList<String> edge = entry.getKey();
+			String idSourceElement = edge.get(0);
+			String idTargetElement = edge.get(1);
+			ArrayList<Integer> informationContact = entry.getValue();
+			Integer curEdgeTS = informationContact.get(0);
+			Integer curEdgeCounter = informationContact.get(1);
+			
+			for(ArrayList<String> alreadyContact : contactsListAlreadyProcessed) {
+				if(alreadyContact.get(0).equals(idSourceElement) && alreadyContact.get(1).equals(idTargetElement)
+				|| alreadyContact.get(0).equals(idTargetElement) && alreadyContact.get(1).equals(idSourceElement)) {
+					
+					contactAlreadyProcessed = true;
+				}
+			}
+			
+			if(!contactAlreadyProcessed && curEdgeCounter >= LogParser.numberOfMinTSforContact) {
+				contactNumber += curEdgeCounter;
+				
+				// Creo gli archi nella matrice di adiacenza se non presenti...
+				if(!adjacencyMatrix.contains(idSourceElement, idTargetElement) && !adjacencyMatrix.contains(idTargetElement, idSourceElement)) {
+					adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curEdgeCounter));
+					adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curEdgeCounter)); //Perpendicular
+				} else {
+					// ... altrimenti aggiorno i pesi
+					int curWeight = Integer.parseInt(adjacencyMatrix.get(idSourceElement, idTargetElement));
+					curWeight += curEdgeCounter;
+					adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
+					adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
+				}
+				logger.debug("[HANGING] " + currentTS + " (" + curEdgeTS +"): [" + idSourceElement + "," + idTargetElement + "] (" + curEdgeCounter + " --> END" + ")");
+				
+				// Aggiunta del nuovo contatto (e inverso) nell'array di quelli gia' processati
+				ArrayList<String> alreadyContact = new ArrayList<String>();
+				alreadyContact.add(idSourceElement);
+				alreadyContact.add(idTargetElement);
+				ArrayList<String> alreadyContactInv = new ArrayList<String>();
+				alreadyContactInv.add(idTargetElement);
+				alreadyContactInv.add(idSourceElement);
+				contactsListAlreadyProcessed.add(alreadyContact);
+				contactsListAlreadyProcessed.add(alreadyContactInv);
+			}
+		}
+	}
 
 	public void readLog(Integer startTS, Integer endTS) throws IOException {
 		logger.info("Reading...");
@@ -513,7 +569,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 			}
 			
 			if(LogParser.buildingEdgeMode == ParsingConstants.INTERVAL_EDGE_MODE) {
-				updateHangingFinalContacts();
+				updateHangingFinalContactsInterval();
+			} else
+			if(LogParser.buildingEdgeMode == ParsingConstants.EFFECTIVE_EDGE_MODE) {
+				updateHangingFinalContactsEffective();
 			}
 			
 		} finally {

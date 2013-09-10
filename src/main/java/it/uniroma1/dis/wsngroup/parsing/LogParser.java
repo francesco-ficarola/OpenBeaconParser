@@ -52,7 +52,7 @@ public class LogParser {
 	public static Integer numberOfContinuousTS;
 	public static Integer numberOfIntervalTS;
 	public static Integer percOfDeliveredMsg;
-	public static Integer numberOfMinTS;
+	public static Integer numberOfMinTSforContact;
 	public static Integer numberOfExpiringTS;
 	
 	public LogParser() {
@@ -554,9 +554,9 @@ public class LogParser {
 					}
 					
 					if(args.length > i+2 && args[i+1].matches("\\d+") && args[i+2].matches("\\d+")) {					
-						LogParser.numberOfMinTS = Integer.parseInt(args[i+1]);
+						LogParser.numberOfMinTSforContact = Integer.parseInt(args[i+1]);
 						LogParser.numberOfExpiringTS = Integer.parseInt(args[i+2]);
-						if(LogParser.numberOfMinTS > 1 && LogParser.numberOfExpiringTS > 1) {
+						if(LogParser.numberOfMinTSforContact > 1 && LogParser.numberOfExpiringTS > 1) {
 							LogParser.buildingEdgeMode = ParsingConstants.EFFECTIVE_EDGE_MODE;
 						} else {
 							System.out.println("\nERROR:\nThe number of the minimum contact timestamps must be greater than 1.\nThe expiration duration must be greater than 1.\n");
