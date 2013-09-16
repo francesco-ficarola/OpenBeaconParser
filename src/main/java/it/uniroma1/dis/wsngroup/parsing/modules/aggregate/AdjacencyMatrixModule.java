@@ -8,13 +8,13 @@ import it.uniroma1.dis.wsngroup.parsing.representation.GraphRepresentation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,6 +48,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 	private Integer currentTS;
 	private Map<ArrayList<String>, ArrayList<Integer>> aggregationOfEdge;
 	private Map<String, Integer> fmSketch;
+	private Map<Integer, Double> estimSketchPerTS;
 
 	public AdjacencyMatrixModule(File fileInput, FileInputStream fis) {
 		this.fileInput = fileInput;
@@ -61,6 +62,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		currentTS = 0;
 		aggregationOfEdge = new HashMap<ArrayList<String>, ArrayList<Integer>>();
 		fmSketch = new HashMap<String, Integer>();
+		estimSketchPerTS = new HashMap<Integer, Double>();
 	}
 
 	private void packetParsing(String s, Integer startTS, Integer endTS) throws IOException {
@@ -445,6 +447,17 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 					}
 				}
 			}
+			
+			/** FM-Sketch part */
+			if(LogParser.fmSketch) {
+				double avgEstimation = fmAvgEstimation(false);
+				if(!estimSketchPerTS.containsKey(currentTS)) {
+					estimSketchPerTS.put(currentTS, avgEstimation);
+				} else {
+					Double curEstimation = estimSketchPerTS.get(currentTS);
+					estimSketchPerTS.put(currentTS, Math.max(avgEstimation, curEstimation));
+				}
+			}
 		}
 	}
 	
@@ -650,31 +663,56 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		
 		
 		/** FM-Sketch part */
-//		double avgEstimation = 0;
-//		int numTags = 0;
-//		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
-//		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
-//		while(itSketch.hasNext()) {
-//			Entry<String, Integer> entry = itSketch.next();
-//			String id = entry.getKey();
-//			Integer sketch = entry.getValue();
-//			
-//			boolean[] binary = Functions.intToBinaryArray(sketch, 16);
-//			int pos_first_zero = 0;
-//			for(int j = 0; j < binary.length; j++) {
-//				boolean c = binary[j];
-//				if(!c) {
-//					pos_first_zero = j;
-//					break;
-//				}
-//			}
-//			double estimation = Math.pow(2, pos_first_zero)/0.77351;
-//			avgEstimation += estimation;
-//			System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
-//			numTags++;
-//		}
-//		avgEstimation = avgEstimation / numTags;
-//		System.out.println("Estimation: " + avgEstimation);
+		if(LogParser.fmSketch) {
+			double avgEstimation = fmAvgEstimation(true);
+			System.out.println("Estimation: " + avgEstimation);
+			writeEstimationtTxt();
+		}
 	}
 	
+	private double fmAvgEstimation(boolean last) {
+		double avgEstimation = 0;
+		int numTags = 0;
+		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
+		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
+		while(itSketch.hasNext()) {
+			Entry<String, Integer> entry = itSketch.next();
+			String id = entry.getKey();
+			Integer sketch = entry.getValue();
+			
+			boolean[] binary = Functions.intToBinaryArray(sketch, 16);
+			int pos_first_zero = 0;
+			for(int j = 0; j < binary.length; j++) {
+				boolean c = binary[j];
+				if(!c) {
+					pos_first_zero = j;
+					break;
+				}
+			}
+			double estimation = Math.pow(2, pos_first_zero)/0.77351;
+			avgEstimation += estimation;
+			if(last) {
+				System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
+			}
+			numTags++;
+		}
+		avgEstimation = avgEstimation / numTags;
+		return avgEstimation;
+	}
+	
+	private void writeEstimationtTxt() throws FileNotFoundException {
+		File fSketch = new File(fileInput.getParentFile() + "/gnuplot_fm_wsdm.txt");
+		FileOutputStream fosSketch = new FileOutputStream(fSketch, true);
+		PrintStream psSketch = new PrintStream(fosSketch);
+		int counterID = 0;
+		Set<Map.Entry<Integer, Double>> estimSketchSet = estimSketchPerTS.entrySet();
+		Iterator<Entry<Integer, Double>> itEstim = estimSketchSet.iterator();
+		while(itEstim.hasNext()) {
+			Entry<Integer, Double> curEntry = itEstim.next();
+			Double curAvgEstim = curEntry.getValue();
+			psSketch.println(counterID + " " + curAvgEstim);
+			counterID++;
+		}
+		psSketch.close();
+	}
 }

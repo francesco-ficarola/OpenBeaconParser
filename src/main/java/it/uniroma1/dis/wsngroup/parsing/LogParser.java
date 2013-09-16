@@ -54,6 +54,7 @@ public class LogParser {
 	public static Integer percOfDeliveredMsg;
 	public static Integer numberOfMinTSforContact;
 	public static Integer numberOfExpiringTS;
+	public static boolean fmSketch;
 	
 	public LogParser() {
 		fileInput = null;
@@ -70,6 +71,10 @@ public class LogParser {
 		buildingEdgeMode = ParsingConstants.DEFAULT_EDGE_MODE;
 		numberOfIntervalTS = 0;
 		percOfDeliveredMsg = 0;
+		numberOfMinTSforContact = 0;
+		numberOfExpiringTS = 0;
+		fmSketch = false;
+		
 	}
 
 	public static void main(String[] args) {
@@ -582,6 +587,17 @@ public class LogParser {
 				
 				else
 					
+				if(args[i].equals("-fm") || args[i].equals("--flajolet-martin")) {
+					if(!gexf && !json && !net && !dnf && !stats) {
+						LogParser.fmSketch = true;
+					} else {
+						usage();
+						System.exit(0);
+					}
+				}
+				
+				else
+					
 				if(args[i].equals("-h") || args[i].equals("--help")) {
 					usage();
 					System.exit(0);
@@ -637,6 +653,7 @@ public class LogParser {
 		System.out.println("-ct <INTVALUE> or --continuous-timestamps <INTVALUE>: specify the number of continuous timestamps to build an edge.");
 		System.out.println("-it <INTVALUE> <INTVALUE> or --interval-timestamps <INTVALUE> <INTVALUE>: specify the timestamp interval and the percentage of messages to build an edge.");
 		System.out.println("-eff <INTVALUE> <INTVALUE> or --effective-timestamps <INTVALUE> <INTVALUE>: specify the minimum contact duration and the expiration to build an edge.");
+		System.out.println("-fm or --flajolet-martin: Distinct counting by Flajolet-Martin (only for Adjacency Matrix).");
 		System.out.println("-stats or --statistics: print some stats.\n");
 	}	
 }
