@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -672,7 +673,7 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 	
 	private double fmAvgEstimation(boolean last) {
 		double avgEstimation = 0;
-		int numTags = 0;
+		int numTags = fmSketch.size();
 		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
 		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
 		while(itSketch.hasNext()) {
@@ -694,7 +695,6 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 			if(last) {
 				System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
 			}
-			numTags++;
 		}
 		avgEstimation = avgEstimation / numTags;
 		return avgEstimation;
@@ -705,7 +705,8 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		FileOutputStream fosSketch = new FileOutputStream(fSketch, true);
 		PrintStream psSketch = new PrintStream(fosSketch);
 		int counterID = 0;
-		Set<Map.Entry<Integer, Double>> estimSketchSet = estimSketchPerTS.entrySet();
+		Map<Integer, Double> sortedEstimSketchPerTS = new TreeMap<Integer, Double>(estimSketchPerTS);
+		Set<Map.Entry<Integer, Double>> estimSketchSet = sortedEstimSketchPerTS.entrySet();
 		Iterator<Entry<Integer, Double>> itEstim = estimSketchSet.iterator();
 		while(itEstim.hasNext()) {
 			Entry<Integer, Double> curEntry = itEstim.next();
