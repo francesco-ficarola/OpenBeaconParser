@@ -159,6 +159,12 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 						if(power <= ParsingConstants.MAX_CONTACT_POWER) {
 							idTargetElement = tokens.get(i).replaceAll("\\x5b|\\x28\\w+\\x29", "");
 							
+							// Se non esiste l'elemento nell'header riga o colonna
+							// allora provvedo ad aggiungerlo nella matrice
+							if(!adjacencyMatrix.contains(idTargetElement, idTargetElement)) {
+								adjacencyMatrix.put(idTargetElement, idTargetElement, "0");
+							}
+							
 							/*
 							 * 1-timestamp edges
 							 */
@@ -220,8 +226,10 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 									if((currentTS % LogParser.numberOfIntervalTS == 0)
 											|| (curEdgeTS < currentTS - (currentTS % LogParser.numberOfIntervalTS))) {
 										
+										logger.debug("");
 										logger.debug("UNLOADING - currentTS: " + currentTS);
 										logger.debug("EDGES: " + edge.toString() + " or " + edgeInv.toString());
+										logger.debug("EDGE TS:" + curEdgeTS + ", COUNTER: " + curEdgeCounter);
 										
 										if(curEdgeCounter >= numOfNeededMsgForInterval) {
 											
@@ -236,6 +244,11 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 												adjacencyMatrix.put(idSourceElement, idTargetElement, String.valueOf(curWeight));
 												adjacencyMatrix.put(idTargetElement, idSourceElement, String.valueOf(curWeight)); //Perpendicular
 											}
+											
+											/** Change 2013/10/11 : if a link has the required number of contacts then its counter is reset */
+											curEdgeCounter = 0;
+											currentInformationTime.set(1, 0);
+											currentInformationTimeInv.set(1, 0);
 										}
 									}
 									
