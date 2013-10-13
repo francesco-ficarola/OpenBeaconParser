@@ -680,12 +680,12 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 		if(LogParser.fmSketch) {
 			double avgEstimation = fmAvgEstimation(true);
 			System.out.println("Estimation: " + avgEstimation);
-			writeEstimationtTxt();
+			writeEstimationtCsv();
 		}
 	}
 	
 	private double fmAvgEstimation(boolean last) {
-		double avgEstimation = 0;
+		double sumPowerIndex = 0;
 		int numTags = fmSketch.size();
 		Set<Map.Entry<String, Integer>> setSketch = fmSketch.entrySet();
 		Iterator<Entry<String, Integer>> itSketch = setSketch.iterator();
@@ -702,19 +702,19 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 					pos_first_zero = j;
 					break;
 				}
-			}
-			double estimation = Math.pow(2, pos_first_zero)/0.77351;
-			avgEstimation += estimation;
+			} 
+			
+			sumPowerIndex += pos_first_zero;
 			if(last) {
-				System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero + "\t" + estimation);
+				System.out.println(id + "\t" + sketch + "\t" + Functions.boolArrayToString(binary) + "\t\t\t" + pos_first_zero);
 			}
 		}
-		avgEstimation = avgEstimation / numTags;
-		return avgEstimation;
+		double avgPowerIndex = (double)sumPowerIndex / numTags;
+		return Math.pow(2, avgPowerIndex)/0.77351;
 	}
 	
-	private void writeEstimationtTxt() throws FileNotFoundException {
-		File fSketch = new File(fileInput.getParentFile() + "/gnuplot_fm_wsdm.txt");
+	private void writeEstimationtCsv() throws FileNotFoundException {
+		File fSketch = new File(fileInput.getParentFile() + "/gnuplot_fm_wsdm.csv");
 		FileOutputStream fosSketch = new FileOutputStream(fSketch, true);
 		PrintStream psSketch = new PrintStream(fosSketch);
 		int counterID = 0;
