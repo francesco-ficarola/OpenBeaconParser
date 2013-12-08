@@ -1,7 +1,7 @@
 OpenBeacon Log Parser and Extensions
 =======================================
 
-The OpenBeacon Parser is a software under development to parse log files produced by a backend server, receiving packets from the [OpenBeacon Ethernet EasyReader PoE II - Active 2.4GHz RFID Reader](http://www.openbeacon.org/OpenBeacon_Ethernet_EasyReader_PoE_II_-_Active_2.4GHz_RFID_Reader) devices. In addition, it contains useful extensions to analyze several algorithms on graphs.
+The OpenBeacon Parser is a software under development to parse log files produced by the [OpenBeacon Logger](https://github.com/francesco-ficarola/OpenBeaconLogger), receiving packets from [OpenBeacon Ethernet EasyReader PoE II - Active 2.4GHz RFID Reader](http://www.openbeacon.org/OpenBeacon_Ethernet_EasyReader_PoE_II_-_Active_2.4GHz_RFID_Reader) devices. In addition, it contains useful extensions to analyze several algorithms on graphs.
 
 Parser author: *Francesco Ficarola* - Extensions author: *Gianluca Amori*
 
@@ -23,13 +23,13 @@ Supported output graph formats
 
 
 How to compile
-----------
+--------------
 
 	$ mvn clean compile
 
 
-How to run the LogParser
-------------------------
+How to run
+----------
 
 Execute the following command to run the parser help and see all accepted arguments:
 
@@ -57,16 +57,14 @@ Examples:
 Log example that can be parsed
 ------------------------------
 
-	2012-06-20 19:55:39+0200 [__builtin__.Receiver (UDP)] S t=1340214939 ip=0xc0a85009 id=1264 boot_count=1 seq=0x000007a1 strgth=1 flgs=2 last_seen=0 
-	2012-06-20 19:55:40+0200 [__builtin__.Receiver (UDP)] S t=1340214940 ip=0xc0a85009 id=1264 boot_count=1 seq=0x000007c1 strgth=2 flgs=2 last_seen=0
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85013 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85016 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85009 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85009 id=1119 boot_count=2 seq=0x00004de1 flags=2 [1135(1) #3]
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85016 id=1264 boot_count=1 seq=0x000007e1 flags=2
-	2012-06-20 19:55:41+0200 [__builtin__.Receiver (UDP)] C t=1340214941 ip=0xc0a85009 id=1264 boot_count=1 seq=0x000007e1 flags=2
-	2012-06-20 19:55:42+0200 [__builtin__.Receiver (UDP)] S t=1340214942 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000801 strgth=0 flgs=2 last_seen=0 
-	2012-06-20 19:55:44+0200 [__builtin__.Receiver (UDP)] S t=1340214944 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000821 strgth=1 flgs=2 last_seen=0 
-	2012-06-20 19:55:44+0200 [__builtin__.Receiver (UDP)] S t=1340214944 ip=0xc0a85009 id=1135 boot_count=4 seq=0x00000dc1 strgth=2 flgs=0 last_seen=0 
-	2012-06-20 19:55:45+0200 [__builtin__.Receiver (UDP)] S t=1340214945 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000841 strgth=2 flgs=2 last_seen=0 
+	S t=1340214939 ip=0xc0a85009 id=1264 boot_count=1 seq=0x000007a1 strgth=1 flgs=2 last_seen=0 
+	S t=1340214940 ip=0xc0a85009 id=1264 boot_count=1 seq=0x000007c1 strgth=2 flgs=2 last_seen=0
+	C t=1340214941 ip=0xc0a85013 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
+	C t=1340214941 ip=0xc0a85016 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
+	C t=1340214941 ip=0xc0a85009 id=1135 boot_count=4 seq=0x00000d61 flags=0 [1119(1) #1]
+	C t=1340214941 ip=0xc0a85009 id=1119 boot_count=2 seq=0x00004de1 flags=2 [1135(1) #3]
+	S t=1340214942 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000801 strgth=0 flgs=2 last_seen=0 
+	S t=1340214944 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000821 strgth=1 flgs=2 last_seen=0 
+	S t=1340214944 ip=0xc0a85009 id=1135 boot_count=4 seq=0x00000dc1 strgth=2 flgs=0 last_seen=0 
+	S t=1340214945 ip=0xc0a85009 id=1264 boot_count=1 seq=0x00000841 strgth=2 flgs=2 last_seen=0 
 
