@@ -444,7 +444,7 @@ public class RealTimeModule implements GraphRepresentation {
 	private void realTimeWriteFile(TimestampObject tsObject) {
 		logger.info("Writing...");
 		
-		File f = new File(fileInput.getParentFile() + "/data/" + "socialdis_" + tsObject.getTimestamp()  + ".json");
+		File f = new File(fileInput.getParentFile() + "/data/" + "graph_" + tsObject.getTimestamp()  + ".json");
 		FileOutputStream fos;
 		PrintStream ps = null;
 		try {
