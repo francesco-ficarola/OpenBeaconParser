@@ -408,11 +408,15 @@ public class AdjacencyMatrixModule implements GraphRepresentation {
 									// Se la differenza tra il TS corrente e quello memorizzato nell'arco e' minore
 									// di una certa soglia, allora aggiorno il contatore dei pesi dell'arco.
 									// Caso in cui il contatto continua ad esserci...
-									if((currentTS - curEdgeTS) <= LogParser.numberOfExpiringTS && !currentTS.equals(curEdgeTS)) {
-										Integer updatedEdgeCounter = curEdgeCounter + (currentTS - curEdgeTS);
-										currentInformationTime.set(1, updatedEdgeCounter);
-										currentInformationTimeInv.set(1, updatedEdgeCounter);
-										logger.debug("[CONTINUE] " + currentTS + " (" + curEdgeTS +"): [" + idSourceElement + "," + idTargetElement + "] (" + curEdgeCounter + " --> " + updatedEdgeCounter + ")");
+									if((currentTS - curEdgeTS) <= LogParser.numberOfExpiringTS) {
+										// Condizione per evitare di processare lo stesso arco piu' volte
+										// nello stesso timestamp (e.g., visto da reader diversi)
+										if(!currentTS.equals(curEdgeTS)) {
+											Integer updatedEdgeCounter = curEdgeCounter + (currentTS - curEdgeTS);
+											currentInformationTime.set(1, updatedEdgeCounter);
+											currentInformationTimeInv.set(1, updatedEdgeCounter);
+											logger.debug("[CONTINUE] " + currentTS + " (" + curEdgeTS +"): [" + idSourceElement + "," + idTargetElement + "] (" + curEdgeCounter + " --> " + updatedEdgeCounter + ")");
+										}
 									}
 									
 									// ... altrimenti, se maggiore, controllo se il contatore presente nell'arco
