@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -140,6 +143,35 @@ public class StatsModule extends AbstractModule {
 			for(Map.Entry<Integer, Integer> entry : contactSecondsSet) {
 				logger.info(entry.getKey() + " seconds: " + entry.getValue() + " contacts");
 			}
+			
+			logger.info("**********************************************************************");
+			
+			// Computing the average of density...
+			Set<String> nodes = new HashSet<String>();
+			it = tsObjectList.iterator();
+			while(it.hasNext()) {
+				TimestampObject curTimestampObject = it.next();
+				for(Tag tag : curTimestampObject.getTags()) {
+					nodes.add(tag.getTagID());
+				}
+			}
+			Integer maxTotalEdges = (nodes.size() * nodes.size() - 1) / 2;
+			logger.info("Total number of nodes: " + nodes.size());
+			
+			List<Double> densityList = new LinkedList<Double>();
+			it = tsObjectList.iterator();
+			while(it.hasNext()) {
+				TimestampObject curTimestampObject = it.next();
+				Integer numEdges = curTimestampObject.getEdges().size();
+				Double density = (double) numEdges / maxTotalEdges;
+				densityList.add(density);
+			}
+			Double sumDensity = 0.0;
+			for(Double density : densityList) {
+				sumDensity += density;
+			}
+			Double avgDensity = sumDensity / densityList.size();
+			logger.info("Avg density: " + avgDensity);
 		}
 	}
 
