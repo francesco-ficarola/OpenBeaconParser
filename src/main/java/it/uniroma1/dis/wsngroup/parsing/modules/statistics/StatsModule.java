@@ -144,7 +144,7 @@ public class StatsModule extends AbstractModule {
 				logger.info(entry.getKey() + " seconds: " + entry.getValue() + " contacts");
 			}
 			
-			logger.info("**********************************************************************");
+			logger.info("***********************************");
 			
 			// Computing the average of density...
 			Set<String> nodes = new HashSet<String>();
