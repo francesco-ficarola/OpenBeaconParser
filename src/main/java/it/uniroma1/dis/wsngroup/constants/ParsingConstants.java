@@ -18,7 +18,7 @@ public class ParsingConstants {
 	public static final String CUSTOM_PREFIX = "boot_count=";
 	public static final String SEQ_PREFIX = "seq=";
 	
-	public static final int MAX_CONTACT_POWER = 1;
+	public static final int MAX_CONTACT_POWER = 2;
 	
 	public static final int ADJACENCY_LISTS_REPRESENTATION = 1;
 	public static final int ADJACENCY_MATRIX_REPRESENTATION = 2;
